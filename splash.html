@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Cortex</title>
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self' 'unsafe-inline' data:"
+    />
+    <link rel="preload" as="image" href="assets/splash/splash1.png" />
+    <link rel="preload" as="image" href="assets/splash/splash2.png" />
+    <link rel="preload" as="image" href="assets/splash/splash3.png" />
+    <link rel="preload" as="image" href="assets/splash/splash4.png" />
+    <link rel="preload" as="image" href="assets/splash/splash5.png" />
+    <link rel="preload" as="image" href="assets/splash/splash6.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: transparent;
+        overflow: hidden;
+      }
+      body {
+        font-family: "Poppins", ui-sans-serif, system-ui, -apple-system,
+          "Segoe UI", Roboto, "Helvetica Neue", Arial;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        color: #e5e7eb;
+      }
+
+      .root {
+        --accent: #3773f8;
+        --accent-weak: rgba(55, 115, 248, 0.16);
+        --text: #e5e7eb;
+        --muted: #a1a1aa;
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+      }
+      .card {
+        width: min(1100px, 96vw);
+        height: min(640px, 90vh);
+        border-radius: 18px;
+        overflow: hidden;
+        position: relative;
+        background: rgba(7, 10, 16, 0.88);
+        box-shadow: none;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        display: grid;
+        grid-template-columns: 42% 58%;
+      }
+      .card::before {
+        content: "";
+        position: absolute;
+        inset: -2px;
+        background: radial-gradient(
+            800px 400px at 0% 20%,
+            rgba(55, 115, 248, 0.22),
+            transparent 60%
+          ),
+          radial-gradient(
+            600px 300px at 100% 80%,
+            rgba(55, 115, 248, 0.12),
+            transparent 60%
+          );
+        filter: blur(22px);
+        z-index: 0;
+        pointer-events: none;
+      }
+
+      .panel {
+        position: relative;
+        z-index: 1;
+        padding: 28px 28px 24px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        height: 100%;
+      }
+      .brand {
+        display: flex;
+        align-items: center; /* text + badge vertically center */
+        gap: 14px; /* thoda zyada gap */
+        margin-bottom: 18px;
+      }
+      .brand-badge {
+        width: 64px; /* 40 → 64 (ya 72 karna ho to bhi ok) */
+        height: 64px;
+        border-radius: 16px;
+        background: radial-gradient(
+          120% 120% at 30% 30%,
+          #74a4ff,
+          var(--accent)
+        );
+        display: grid; /* center the image */
+        place-items: center; /* ← perfectly centered */
+        overflow: hidden; /* image corners stay rounded */
+      }
+      .brand-badge img {
+        width: 72%; /* image size control (60–80% range best) */
+        height: 72%;
+        object-fit: contain;
+        display: block;
+        /* optional polish */
+        image-rendering: auto;
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
+      }
+      .brand-title {
+        font-weight: 600;
+        letter-spacing: 0.25em;
+        line-height: 1;
+        color: #9ca3af;
+        text-transform: uppercase;
+      }
+
+      .hero {
+        font-weight: 800;
+        letter-spacing: -0.01em;
+        line-height: 1.1;
+        margin-top: 6px;
+        font-size: 34px;
+      }
+
+      .desc {
+        margin-top: 14px;
+        color: #cbd5e1;
+        font-size: 14px;
+        line-height: 1.55;
+        margin-bottom: 20px;
+        font-weight: 400;
+      }
+      .spacer {
+        display: none;
+      }
+
+      .label {
+        font-size: 12px;
+        color: #a1a1aa;
+        font-weight: 500;
+        margin-bottom: 8px;
+      }
+      .bar-wrap {
+        height: 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        overflow: hidden;
+        position: relative;
+      }
+      .bar {
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: 0%;
+        background: linear-gradient(90deg, var(--accent), var(--accent));
+        box-shadow: 0 0 18px rgba(55, 115, 248, 0.45);
+        border-radius: 999px;
+      }
+      .bar::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: repeating-linear-gradient(
+          60deg,
+          rgba(255, 255, 255, 0.18) 0 6px,
+          transparent 6px 14px
+        );
+        mix-blend-mode: overlay;
+        animation: shine 1.2s linear infinite;
+      }
+      @keyframes shine {
+        to {
+          transform: translateX(40px);
+        }
+      }
+      .percent {
+        margin-top: 6px;
+        font-size: 12px;
+        color: #e5e7eb;
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .foot {
+        position: absolute;
+        left: 28px;
+        right: 28px;
+        bottom: 18px;
+        font-size: 11px;
+        color: #94a3b8;
+      }
+      .foot a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+
+      .visual {
+        position: relative;
+        z-index: 1;
+        background: #0b1220;
+        overflow: hidden;
+      }
+      .slide {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        filter: contrast(1.02) saturate(1.02);
+        opacity: 0;
+        transition: opacity 0.28s ease;
+      }
+      .slide.show {
+        opacity: 1;
+      }
+      .visual::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          90deg,
+          rgba(0, 0, 0, 0.35) 0%,
+          rgba(0, 0, 0, 0) 40%
+        );
+        pointer-events: none;
+      }
+
+      .outline {
+        position: absolute;
+        inset: 8px;
+        border-radius: 14px;
+        pointer-events: none;
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="root">
+      <div class="card">
+        <div class="panel">
+          <div class="brand">
+            <div class="brand-badge" aria-hidden="true">
+              <img src="assets/logo/icon.png" alt="ibexCortex logo" />
+            </div>
+            <div>
+              <div class="brand-title" id="brand">
+                ibex<span style="color: #3773f8">Vision</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero" id="title">Bring AI to your Product</div>
+          <div class="desc" id="desc">
+            Materialize your artificial intelligence ambitions into real-life
+            workable products that meet customer demands and regulatory
+            imperatives—on time and within budget.
+          </div>
+
+          <div class="spacer"></div>
+
+          <div class="label" id="loadLabel">Loading intelligence engine...</div>
+          <div class="bar-wrap"><div class="bar" id="bar"></div></div>
+          <div class="percent"><span id="percent">0</span>%</div>
+
+          <div class="foot">
+            © 2025 ibexVision. All rights reserved • For more details, visit
+            <a href="#">ibexvision.ai</a>
+          </div>
+        </div>
+
+        <div class="visual" id="visual"></div>
+        <div class="outline"></div>
+      </div>
+    </div>
+
+    <script>
+      const slides = [
+        {
+          brandHTML: "ibex<span style='color:#3773F8'>Vision</span>",
+          title: "Bring AI to your Product",
+          desc: "Materialize your artificial intelligence ambitions into real-life workable products that meet customer demands and regulatory imperatives—on time and within budget.",
+          loadingLabel: "Loading intelligence engine...",
+          image: "assets/splash/splash1.png",
+        },
+        {
+          brandHTML: "ibex<span style='color:#3773F8'>Cortex</span>",
+          title: "Automated Batch Processing",
+          desc: "Handle massive volumes of real-world driving data by automating event detection, scene modelling, and scenario generation. Reduce cost and accelerate development with precision.",
+          loadingLabel: "Loading batch engine...",
+          image: "assets/splash/splash2.png",
+        },
+        {
+          brandHTML: "ibex<span style='color:#3773F8'>Cortex</span>",
+          title: "End-to-End Simulations",
+          desc: "Scale your testing coverage across every possible driving condition using our CI-integrated, high-fidelity simulation pipeline. Scenario modelling, fault injection and performance evaluation in one process.",
+          loadingLabel: "Initializing simulation modules...",
+          image: "assets/splash/splash3.png",
+        },
+        {
+          brandHTML: "ibex<span style='color:#3773F8'>Cortex</span>",
+          title: "DriveLab & Performance KPIs",
+          desc: "Test, visualize and validate each behaviour of your AD stack via real-time simulations and key performance indicators (KPIs) for faster, data-driven decisions.",
+          loadingLabel: "Loading validation environment...",
+          image: "assets/splash/splash4.png",
+        },
+        {
+          brandHTML: "ibex<span style='color:#3773F8'>Cortex</span>",
+          title: "Fault Injection Across ASPICE",
+          desc: "Inject sensor, ECU and algorithm-level faults in real time to validate robustness. Structured fault simulation aligned with ASPICE and ISO 26262 reveals weaknesses early.",
+          loadingLabel: "Injecting sensor error scenarios...",
+          image: "assets/splash/splash5.png",
+        },
+        {
+          brandHTML: "ibex<span style='color:#3773F8'>Cortex</span>",
+          title: "Sensor Fusion Technology",
+          desc: "Merge radar, lidar and camera inputs into a single reliable perception model. Ensure safe, accurate decision-making even in low-visibility or complex conditions.",
+          loadingLabel: "Aligning multi-sensor streams...",
+          image: "assets/splash/splash6.png",
+        },
+      ];
+
+      const IMAGE_MS = 1000;
+      const DURATION = slides.length * IMAGE_MS;
+ 
+      slides.forEach((s) => {
+        const i = new Image();
+        i.src = s.image;
+      });
+
+      const brand = document.getElementById("brand");
+      const title = document.getElementById("title");
+      const desc = document.getElementById("desc");
+      const loadLabel = document.getElementById("loadLabel");
+
+      const visual = document.getElementById("visual");
+      const layers = [
+        document.createElement("img"),
+        document.createElement("img"),
+      ];
+      layers.forEach((el) => {
+        el.className = "slide";
+        el.decoding = "async";
+        el.loading = "eager";
+        el.draggable = false;
+        visual.appendChild(el);
+      });
+      let active = 0;
+
+      function setSlide(idx) {
+        const s = slides[idx % slides.length];
+
+        brand.innerHTML = s.brandHTML;
+        title.textContent = s.title;
+        desc.textContent = s.desc;
+        loadLabel.textContent = s.loadingLabel;
+
+        const next = layers[active ^ 1];
+        next.src = s.image;
+        next.classList.add("show");
+        layers[active].classList.remove("show");
+        active ^= 1;
+      }
+
+      setSlide(0);
+
+      let i = 1;
+      const rot = setInterval(() => setSlide(i++), IMAGE_MS);
+      setTimeout(() => clearInterval(rot), DURATION);
+
+      const start = performance.now();
+      const bar = document.getElementById("bar");
+      const pct = document.getElementById("percent");
+      function tick(now) {
+        const p = Math.min((now - start) / DURATION, 1);
+        bar.style.width = p * 100 + "%";
+        pct.textContent = String(Math.round(p * 100));
+        if (p < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    </script>
+  </body>
+</html>

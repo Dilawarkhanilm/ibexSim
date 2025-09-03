@@ -1,0 +1,23 @@
+{
+  "name": "cortex",
+  "version": "1.0.0",
+  "description": "Cortex - Electron + React (TS) desktop app",
+  "main": "main.js",
+  "scripts": {
+    "dev": "concurrently -k \"npm:dev:renderer\" \"npm:dev:electron\"",
+    "dev:renderer": "npm --prefix Frontend run dev",
+    "dev:electron": "wait-on tcp:5173 && cross-env NODE_ENV=development OPEN_DEVTOOLS=0 electron .",
+    "build:renderer": "npm --prefix Frontend run build",
+    "build": "npm run build:renderer",
+    "package": "npm run build && electron-builder",
+    "clean": "rimraf dist Frontend/dist"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "cross-env": "^10.0.0",
+    "electron": "^37.4.0",
+    "electron-builder": "^26.0.12",
+    "rimraf": "^6.0.1",
+    "wait-on": "^8.0.4"
+  }
+}

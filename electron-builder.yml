@@ -1,0 +1,23 @@
+appId: com.cortex.app
+productName: Cortex
+files:
+  - "main.js"
+  - "preload.js"
+  - "splash.html"
+  - "assets/**"
+  - "Frontend/dist/**"
+asar: true
+directories:
+  output: "dist"
+win:
+  target: ["nsis"]
+  icon: "assets/icons/icon.png"
+mac:
+  target: ["dmg"]
+  icon: "assets/icons/icon.icns"
+linux:
+  target: ["AppImage"]
+  category: "Utility"
+extraResources:
+  - from: "assets/"
+    to: "assets"
