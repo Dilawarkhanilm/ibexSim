@@ -1,66 +1,44 @@
-// Frontend/src/App.tsx
-import React from "react";
+import React, { useState } from "react";
 import CustomTitleBar from "./components/CustomTitleBar";
 import MenuBar from "./components/MenuBar";
 import ToolBar from "./components/ToolBar";
 import MainLayout from "./layouts/MainLayout";
 
 const App: React.FC = () => {
-  const handleNewFile = () => {
-    console.log('New file created');
-  };
+  const [currentPage, setCurrentPage] = useState<'login' | 'main'>('login');
 
-  const handleOpenFolder = () => {
-    console.log('Open folder clicked');
-  };
-
-  const handleSave = () => {
-    console.log('Save clicked');
-  };
-
-  const handleUndo = () => {
-    console.log('Undo clicked');
-  };
-
-  const handleRedo = () => {
-    console.log('Redo clicked');
-  };
-
-  const handleRun = () => {
-    console.log('Run clicked');
-  };
-
-  const handleStop = () => {
-    console.log('Stop clicked');
-  };
-
-  const handleRestart = () => {
-    console.log('Restart clicked');
-  };
+  const handleLogin = () => setCurrentPage('main');
+  const handleLogout = () => setCurrentPage('login');
 
   return (
     <div className="h-screen flex flex-col overflow-hidden">
-      {/* Custom Title Bar */}
+      {/* Always show TitleBar */}
       <CustomTitleBar />
 
-      {/* Menu Bar */}
-      <MenuBar />
-
-      {/* Tool Bar */}
-      <ToolBar
-        onNewFile={handleNewFile}
-        onOpenFolder={handleOpenFolder}
-        onSave={handleSave}
-        onUndo={handleUndo}
-        onRedo={handleRedo}
-        onRun={handleRun}
-        onStop={handleStop}
-        onRestart={handleRestart}
-      />
+      {/* Only show MenuBar & ToolBar if NOT on login page */}
+      {currentPage === 'main' && (
+        <>
+          <MenuBar />
+          <ToolBar
+            onNewFile={() => console.log("New file")}
+            onOpenFolder={() => console.log("Open folder")}
+            onSave={() => console.log("Save")}
+            onUndo={() => console.log("Undo")}
+            onRedo={() => console.log("Redo")}
+            onRun={() => console.log("Run")}
+            onStop={() => console.log("Stop")}
+            onRestart={() => console.log("Restart")}
+          />
+        </>
+      )}
 
       {/* Main Application Content */}
       <div className="flex-1 overflow-hidden">
-        <MainLayout />
+        <MainLayout
+          currentPage={currentPage}
+          onLogin={handleLogin}
+          onLogout={handleLogout}
+        />
       </div>
     </div>
   );

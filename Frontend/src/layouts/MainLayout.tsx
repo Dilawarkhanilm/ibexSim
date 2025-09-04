@@ -1,30 +1,22 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Login from '../pages/Login';
-import MainContent from '../pages/MainContent'; // Import your main layout component
+import MainContent from '../pages/MainContent';
 
-const MainLayout: React.FC = () => {
-  const [currentPage, setCurrentPage] = useState<'login' | 'main'>('login'); // Start with 'login' directly
+interface MainLayoutProps {
+  currentPage: 'login' | 'main';
+  onLogin: () => void;
+  onLogout: () => void;
+}
 
-  const handleLogin = () => {
-    setCurrentPage('main');
-  };
-
-  const handleLogout = () => {
-    setCurrentPage('login');
-  };
-
-  const renderPage = () => {
-    switch (currentPage) {
-      case 'login':
-        return <Login onLogin={handleLogin} />;
-      case 'main':
-        return <MainContent onLogout={handleLogout} />;
-      default:
-        return null;
-    }
-  };
-
-  return renderPage();
+const MainLayout: React.FC<MainLayoutProps> = ({ currentPage, onLogin, onLogout }) => {
+  switch (currentPage) {
+    case 'login':
+      return <Login onLogin={onLogin} />;
+    case 'main':
+      return <MainContent onLogout={onLogout} />;
+    default:
+      return null;
+  }
 };
 
 export default MainLayout;
