@@ -7,7 +7,7 @@ interface CustomTitleBarProps {
 }
 
 const CustomTitleBar: React.FC<CustomTitleBarProps> = ({
-    title = "CortexSim",
+    title = "ibexCortex",
     showLogo = true
 }) => {
     const [isMaximized, setIsMaximized] = useState(false);
@@ -47,7 +47,7 @@ const CustomTitleBar: React.FC<CustomTitleBarProps> = ({
             {/* Left section - Logo and Title */}
             <div className="flex items-center px-3 space-x-2 flex-1 min-w-0">
                 {showLogo && (
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-1">
                         {/* App Logo */}
                         <div className="w-4 h-4 bg-primary-500 rounded-sm flex items-center justify-center">
                             <img src={LogoImage} alt="CortexSim Logo" />

@@ -15,8 +15,8 @@ const DEMO_EMAIL = "demo@ibexvision.ai";
 const DEMO_PASSWORD = "Cortex@123";
 
 const Login: React.FC<LoginProps> = ({ onLogin }) => {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const [email, setEmail] = useState("demo@ibexvision.ai");
+    const [password, setPassword] = useState("Cortex@123");
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -129,14 +129,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                                     Forgot password?
                                 </button>
 
-                                <div className="text-right text-gray-500">
-                                    <div className="text-xs">Demo:</div>
-                                    <div className="text-xs">
-                                        <span className="text-gray-400">{DEMO_EMAIL}</span>
-                                        <span className="mx-1">/</span>
-                                        <span className="text-gray-400">{DEMO_PASSWORD}</span>
-                                    </div>
-                                </div>
+
                             </div>
 
                             {/* Error Message */}
