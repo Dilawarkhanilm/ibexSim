@@ -5,10 +5,10 @@ import {
     ChevronLeft,
     ChevronRight
 } from 'lucide-react';
-import CESLeftPanel from './components/CESLeftPanel';
-import CESRightPanel from './components/CESRightPanel';
+import ScenarioGenerationLeftPanel from './components/ScenarioGenerationLeftPanel';
+import ScenarioGenerationRightPanel from './components/ScenarioGenerationRightPanel';
 
-const CriticalEventSieve: React.FC = () => {
+const ScenarioGeneration: React.FC = () => {
     const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(true);
 
     const toggleRightSidebar = () => {
@@ -19,11 +19,11 @@ const CriticalEventSieve: React.FC = () => {
         <div className="h-full bg-zinc-950 text-white flex relative">
             {/* Left Panel - Main Content */}
             <div className="flex-1 flex flex-col min-w-0">
-                <CESLeftPanel />
+                <ScenarioGenerationLeftPanel />
             </div>
 
             {/* Toggle Button */}
-            <div className="absolute top-1 right-0 z-50">
+            <div className="absolute top-4 right-0 z-50">
                 <Button
                     variant="outline"
                     size="sm"
@@ -52,10 +52,10 @@ const CriticalEventSieve: React.FC = () => {
                 isRightSidebarOpen ? 'w-80 opacity-100' : 'w-0 opacity-0',
                 "overflow-hidden"
             )}>
-                <CESRightPanel />
+                <ScenarioGenerationRightPanel />
             </div>
         </div>
     );
 };
 
-export default CriticalEventSieve;
+export default ScenarioGeneration;

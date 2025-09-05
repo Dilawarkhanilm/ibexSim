@@ -1,9 +1,18 @@
-// Frontend/src/pages/ces/components/CESRightPanel.tsx
 import React, { useState } from 'react';
-import { Upload, Play } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Slider } from "@/components/ui/slider";
+import {
+    Upload,
+    Play
+} from 'lucide-react';
 
 const CESRightPanel: React.FC = () => {
-    const [confidenceThreshold, setConfidenceThreshold] = useState(50);
+    const [confidenceThreshold, setConfidenceThreshold] = useState([50]);
     const [selectedModel, setSelectedModel] = useState('FlowWatch-Mini');
     const [clipDuration, setClipDuration] = useState('');
     const [videoQuality, setVideoQuality] = useState({
@@ -15,10 +24,10 @@ const CESRightPanel: React.FC = () => {
     const [autoPause, setAutoPause] = useState(false);
     const [selectedFilter, setSelectedFilter] = useState('All');
 
-    const handleVideoQualityChange = (quality: 'low' | 'medium' | 'high') => {
+    const handleVideoQualityChange = (quality: 'low' | 'medium' | 'high', checked: boolean) => {
         setVideoQuality(prev => ({
             ...prev,
-            [quality]: !prev[quality]
+            [quality]: checked
         }));
     };
 
@@ -32,168 +41,147 @@ const CESRightPanel: React.FC = () => {
     ];
 
     return (
-        <div className="w-80 bg-gray-800 border-l border-gray-700 h-full flex flex-col">
-            {/* Sidebar Header */}
-            <div className="p-4 border-b border-gray-700 flex-shrink-0">
-                <h3 className="text-lg font-medium text-white">Extract Traffic Critical Events (TCEs)</h3>
+        <div className="w-80 bg-zinc-900 border-l border-zinc-800 h-full flex flex-col">
+            {/* Header */}
+            <div className="p-3 border-b border-zinc-800 flex-shrink-0">
+                <h3 className="text-sm font-medium text-zinc-200">Extract Traffic Critical Events (TCEs)</h3>
             </div>
 
-            {/* Sidebar Content - Scrollable */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-6">
+            {/* Content */}
+            <div className="flex-1 overflow-y-auto p-3 space-y-4">
                 {/* Upload Section */}
-                <div>
-                    <div className="flex space-x-2 mb-4">
-                        <button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm transition-colors flex items-center justify-center gap-2">
-                            <Upload className="w-4 h-4" />
-                            Upload by file
-                        </button>
-                        <button className="flex-1 bg-gray-700 hover:bg-gray-600 text-gray-300 px-4 py-2 rounded text-sm transition-colors">
-                            Import from S3
-                        </button>
-                    </div>
-
-                    <div className="border-2 border-dashed border-gray-600 rounded-lg p-6 text-center">
-                        <p className="text-sm text-gray-400 mb-4">Upload your video to extract TCE's</p>
-                        <div className="bg-gray-700 border-2 border-dashed border-gray-500 rounded h-32 flex items-center justify-center">
-                            <span className="text-gray-400">Upload your video</span>
+                <Card className="bg-zinc-800 border-zinc-700">
+                    <CardContent className="p-3 space-y-3">
+                        <div className="flex space-x-2">
+                            <Button size="sm" className="flex-1 h-8 text-xs bg-blue-600 hover:bg-blue-700">
+                                <Upload className="w-3 h-3 mr-1" />
+                                Upload by file
+                            </Button>
+                            <Button variant="secondary" size="sm" className="flex-1 h-8 text-xs bg-zinc-700 hover:bg-zinc-600">
+                                Import from S3
+                            </Button>
                         </div>
-                    </div>
-                </div>
+
+                        <div className="border-2 border-dashed border-zinc-600 rounded-lg p-4 text-center">
+                            <p className="text-xs text-zinc-400 mb-2">Upload your video to extract TCE's</p>
+                            <div className="bg-zinc-700 border-2 border-dashed border-zinc-500 rounded h-20 flex items-center justify-center">
+                                <span className="text-xs text-zinc-400">Upload your video</span>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
 
                 {/* AI Model Selection */}
-                <div>
-                    <label className="block text-sm font-medium mb-2 text-white">Select AI Model</label>
-                    <select
-                        value={selectedModel}
-                        onChange={(e) => setSelectedModel(e.target.value)}
-                        className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white"
-                    >
-                        <option value="FlowWatch-Mini">FlowWatch-Mini</option>
-                        <option value="FlowWatch-Pro">FlowWatch-Pro</option>
-                        <option value="FlowWatch-Max">FlowWatch-Max</option>
-                    </select>
+                <div className="space-y-2">
+                    <Label className="text-xs text-zinc-300">Select AI Model</Label>
+                    <Select value={selectedModel} onValueChange={setSelectedModel}>
+                        <SelectTrigger className="h-8 text-xs bg-zinc-800 border-zinc-700">
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-zinc-800 border-zinc-700">
+                            <SelectItem value="FlowWatch-Mini">FlowWatch-Mini</SelectItem>
+                            <SelectItem value="FlowWatch-Pro">FlowWatch-Pro</SelectItem>
+                            <SelectItem value="FlowWatch-Max">FlowWatch-Max</SelectItem>
+                        </SelectContent>
+                    </Select>
                 </div>
 
                 {/* Confidence Threshold */}
-                <div>
-                    <label className="block text-sm font-medium mb-2 text-white">
-                        Confidence Threshold: {confidenceThreshold}
-                    </label>
-                    <input
-                        type="range"
-                        min="0"
-                        max="100"
+                <div className="space-y-2">
+                    <Label className="text-xs text-zinc-300">
+                        Confidence Threshold: {confidenceThreshold[0]}%
+                    </Label>
+                    <Slider
                         value={confidenceThreshold}
-                        onChange={(e) => setConfidenceThreshold(Number(e.target.value))}
-                        className="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer ces-slider"
+                        onValueChange={setConfidenceThreshold}
+                        max={100}
+                        step={1}
+                        className="w-full"
                     />
                 </div>
 
                 {/* Clip Duration */}
-                <div>
-                    <label className="block text-sm font-medium mb-2 text-white">Clip Duration (seconds)</label>
-                    <input
+                <div className="space-y-2">
+                    <Label className="text-xs text-zinc-300">Clip Duration (seconds)</Label>
+                    <Input
                         type="number"
                         value={clipDuration}
                         onChange={(e) => setClipDuration(e.target.value)}
                         placeholder="Enter duration"
-                        className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white placeholder-gray-400"
+                        className="h-8 text-xs bg-zinc-800 border-zinc-700"
                     />
                 </div>
 
                 {/* Video Quality */}
-                <div>
-                    <label className="block text-sm font-medium mb-3 text-white">Video Quality</label>
-                    <div className="flex space-x-4">
+                <div className="space-y-2">
+                    <Label className="text-xs text-zinc-300">Video Quality</Label>
+                    <div className="flex space-x-3">
                         {(['low', 'medium', 'high'] as const).map((quality) => (
-                            <label key={quality} className="flex items-center">
-                                <input
-                                    type="checkbox"
+                            <div key={quality} className="flex items-center space-x-1">
+                                <Checkbox
+                                    id={quality}
                                     checked={videoQuality[quality]}
-                                    onChange={() => handleVideoQualityChange(quality)}
-                                    className="mr-2 w-4 h-4"
+                                    onCheckedChange={(checked) => handleVideoQualityChange(quality, checked as boolean)}
+                                    className="h-3 w-3"
                                 />
-                                <span className="text-sm text-gray-300 capitalize">{quality}</span>
-                            </label>
+                                <Label htmlFor={quality} className="text-xs text-zinc-400 capitalize">
+                                    {quality}
+                                </Label>
+                            </div>
                         ))}
                     </div>
                 </div>
 
                 {/* Processing Options */}
-                <div className="space-y-3">
-                    <div className="flex items-center">
-                        <input
-                            type="checkbox"
+                <div className="space-y-2">
+                    <div className="flex items-center space-x-2">
+                        <Checkbox
                             id="batch-processing"
                             checked={batchProcessing}
-                            onChange={(e) => setBatchProcessing(e.target.checked)}
-                            className="mr-3 w-4 h-4"
+                            onCheckedChange={(checked) => setBatchProcessing(checked === true)}
+                            className="h-3 w-3"
                         />
-                        <label htmlFor="batch-processing" className="text-sm text-gray-300">
+                        <Label htmlFor="batch-processing" className="text-xs text-zinc-400">
                             Batch Processing
-                        </label>
+                        </Label>
                     </div>
 
-                    <div className="flex items-center">
-                        <input
-                            type="checkbox"
+                    <div className="flex items-center space-x-2">
+                        <Checkbox
                             id="auto-pause"
                             checked={autoPause}
-                            onChange={(e) => setAutoPause(e.target.checked)}
-                            className="mr-3 w-4 h-4"
+                            onCheckedChange={(checked) => setAutoPause(checked === true)}
+                            className="h-3 w-3"
                         />
-                        <label htmlFor="auto-pause" className="text-sm text-gray-300">
+                        <Label htmlFor="auto-pause" className="text-xs text-zinc-400">
                             Auto-Pause
-                        </label>
+                        </Label>
                     </div>
                 </div>
 
                 {/* Filter */}
-                <div>
-                    <label className="block text-sm font-medium mb-2 text-white">Filter</label>
-                    <select
-                        value={selectedFilter}
-                        onChange={(e) => setSelectedFilter(e.target.value)}
-                        className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white text-sm"
-                    >
-                        {filterOptions.map((option) => (
-                            <option key={option} value={option}>
-                                {option}
-                            </option>
-                        ))}
-                    </select>
+                <div className="space-y-2">
+                    <Label className="text-xs text-zinc-300">Filter</Label>
+                    <Select value={selectedFilter} onValueChange={setSelectedFilter}>
+                        <SelectTrigger className="h-8 text-xs bg-zinc-800 border-zinc-700">
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-zinc-800 border-zinc-700">
+                            {filterOptions.map((option) => (
+                                <SelectItem key={option} value={option} className="text-xs">
+                                    {option}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                 </div>
 
                 {/* Play Button */}
-                <div className="pb-4">
-                    <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded transition-colors flex items-center justify-center gap-2 font-medium">
-                        <Play className="w-4 h-4" />
-                        Play
-                    </button>
-                </div>
+                <Button className="w-full h-9 bg-blue-600 hover:bg-blue-700 text-xs">
+                    <Play className="w-3 h-3 mr-1" />
+                    Play
+                </Button>
             </div>
-
-            {/* Custom Styles for Slider */}
-            <style>{`
-                .ces-slider::-webkit-slider-thumb {
-                    appearance: none;
-                    width: 20px;
-                    height: 20px;
-                    border-radius: 50%;
-                    background: #3b82f6;
-                    cursor: pointer;
-                    border: 2px solid #ffffff;
-                }
-                
-                .ces-slider::-moz-range-thumb {
-                    width: 20px;
-                    height: 20px;
-                    border-radius: 50%;
-                    background: #3b82f6;
-                    cursor: pointer;
-                    border: 2px solid #ffffff;
-                }
-            `}</style>
         </div>
     );
 };

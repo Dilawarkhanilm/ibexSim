@@ -1,5 +1,12 @@
-// Frontend/src/components/ProjectExplorer.tsx
 import React, { useState, type JSX } from 'react';
+import { Button } from "@/components/ui/button";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 import {
     ChevronDown,
     ChevronRight,
@@ -19,10 +26,11 @@ interface ProjectNode {
 }
 
 interface ProjectExplorerProps {
+    className?: string;
     onFileClick: (fileName: string, content: JSX.Element) => void;
 }
 
-const ProjectExplorer: React.FC<ProjectExplorerProps> = ({ onFileClick }) => {
+const ProjectExplorer: React.FC<ProjectExplorerProps> = ({ className, onFileClick }) => {
     const [projectTree, setProjectTree] = useState<ProjectNode[]>([
         {
             name: 'Highway_Scenario_Test',
@@ -75,36 +83,35 @@ const ProjectExplorer: React.FC<ProjectExplorerProps> = ({ onFileClick }) => {
     };
 
     const handleFileClick = (fileName: string) => {
-        // Create different content based on file name
         let content: JSX.Element;
 
         switch (fileName) {
             case 'Critical Event Sieve':
                 content = (
-                    <div className="p-6 bg-gray-900 text-white h-full">
-                        <h2 className="text-xl font-bold mb-4">Critical Event Sieve</h2>
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                            <div className="bg-gray-800 p-4 rounded">
-                                <h3 className="font-semibold mb-2">Annotated Frames</h3>
-                                <div className="bg-gray-700 h-64 flex items-center justify-center rounded">
-                                    <div className="text-center text-gray-400">
-                                        <FileText size={48} className="mx-auto mb-2" />
-                                        <p>No Frames</p>
+                    <div className="p-4 bg-zinc-950 text-white h-full">
+                        <h2 className="text-lg font-semibold mb-3 text-zinc-200">Critical Event Sieve</h2>
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                            <div className="bg-zinc-900 p-3 rounded border border-zinc-800">
+                                <h3 className="text-sm font-medium mb-2 text-zinc-300">Annotated Frames</h3>
+                                <div className="bg-zinc-800 h-48 flex items-center justify-center rounded border border-zinc-700">
+                                    <div className="text-center text-zinc-400">
+                                        <FileText size={32} className="mx-auto mb-2" />
+                                        <p className="text-xs">No Frames</p>
                                     </div>
                                 </div>
                             </div>
-                            <div className="lg:col-span-2 bg-gray-800 p-4 rounded">
-                                <h3 className="font-semibold mb-4">Extract Traffic Critical Events (TCEs)</h3>
-                                <div className="space-y-4">
-                                    <div className="border-2 border-dashed border-gray-600 p-8 rounded text-center">
-                                        <p className="text-gray-400 mb-2">Upload your video to extract TCE's</p>
-                                        <button className="bg-blue-600 text-white px-4 py-2 rounded">
+                            <div className="lg:col-span-2 bg-zinc-900 p-3 rounded border border-zinc-800">
+                                <h3 className="text-sm font-medium mb-3 text-zinc-300">Extract Traffic Critical Events (TCEs)</h3>
+                                <div className="space-y-3">
+                                    <div className="border-2 border-dashed border-zinc-600 p-4 rounded text-center">
+                                        <p className="text-xs text-zinc-400 mb-2">Upload your video to extract TCE's</p>
+                                        <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-xs">
                                             Upload by file
-                                        </button>
+                                        </Button>
                                     </div>
-                                    <div className="space-y-2">
-                                        <label className="block text-sm font-medium">Select AI Model</label>
-                                        <select className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2">
+                                    <div className="space-y-1">
+                                        <label className="block text-xs font-medium text-zinc-300">Select AI Model</label>
+                                        <select className="w-full bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-xs text-zinc-300">
                                             <option>FlowWatch-Mini</option>
                                         </select>
                                     </div>
@@ -116,9 +123,9 @@ const ProjectExplorer: React.FC<ProjectExplorerProps> = ({ onFileClick }) => {
                 break;
             default:
                 content = (
-                    <div className="p-6 bg-gray-900 text-white h-full">
-                        <h2 className="text-xl font-bold mb-4">{fileName}</h2>
-                        <p className="text-gray-400">Content for {fileName} will be implemented here.</p>
+                    <div className="p-4 bg-zinc-950 text-white h-full">
+                        <h2 className="text-lg font-semibold mb-3 text-zinc-200">{fileName}</h2>
+                        <p className="text-xs text-zinc-400">Content for {fileName} will be implemented here.</p>
                     </div>
                 );
         }
@@ -132,9 +139,13 @@ const ProjectExplorer: React.FC<ProjectExplorerProps> = ({ onFileClick }) => {
 
             return (
                 <div key={index} className="select-none">
-                    <div
-                        className={`flex items-center px-2 py-1 hover:bg-gray-700 cursor-pointer text-sm ${node.type === 'folder' ? 'text-gray-300' : 'text-gray-400'
-                            }`}
+                    <Button
+                        variant="ghost"
+                        className={cn(
+                            "w-full justify-start h-6 px-2 py-1 text-xs font-normal",
+                            node.type === 'folder' ? 'text-zinc-300' : 'text-zinc-400',
+                            "hover:bg-zinc-800 hover:text-white transition-colors"
+                        )}
                         onClick={() => {
                             if (node.type === 'folder') {
                                 if (node.children) {
@@ -146,22 +157,24 @@ const ProjectExplorer: React.FC<ProjectExplorerProps> = ({ onFileClick }) => {
                                 handleFileClick(node.name);
                             }
                         }}
-                        style={{ paddingLeft: `${path.length * 16 + 8}px` }}
+                        style={{ paddingLeft: `${path.length * 12 + 8}px` }}
                     >
-                        {node.type === 'folder' && (
-                            node.isExpanded ?
-                                <ChevronDown size={14} className="mr-1" /> :
-                                <ChevronRight size={14} className="mr-1" />
-                        )}
-                        {node.type === 'folder' ? (
-                            node.isExpanded ?
-                                <FolderOpen size={14} className="mr-2 text-yellow-500" /> :
-                                <Folder size={14} className="mr-2 text-yellow-500" />
-                        ) : (
-                            <FileText size={14} className="mr-2 text-blue-400" />
-                        )}
-                        <span className="truncate">{node.name}</span>
-                    </div>
+                        <div className="flex items-center w-full">
+                            {node.type === 'folder' && (
+                                node.isExpanded ?
+                                    <ChevronDown size={12} className="mr-1 flex-shrink-0" /> :
+                                    <ChevronRight size={12} className="mr-1 flex-shrink-0" />
+                            )}
+                            {node.type === 'folder' ? (
+                                node.isExpanded ?
+                                    <FolderOpen size={12} className="mr-2 text-amber-500 flex-shrink-0" /> :
+                                    <Folder size={12} className="mr-2 text-amber-500 flex-shrink-0" />
+                            ) : (
+                                <FileText size={12} className="mr-2 text-blue-400 flex-shrink-0" />
+                            )}
+                            <span className="truncate text-left">{node.name}</span>
+                        </div>
+                    </Button>
 
                     {node.type === 'folder' && node.isExpanded && node.children && (
                         <div>
@@ -174,30 +187,81 @@ const ProjectExplorer: React.FC<ProjectExplorerProps> = ({ onFileClick }) => {
     };
 
     return (
-        <div className="w-60 bg-gray-800 border-r border-gray-700 flex flex-col h-full">
-            {/* Header */}
-            <div className="p-2 border-b border-gray-700">
-                <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs text-gray-400 uppercase font-medium">Explorer</span>
-                    <div className="flex space-x-1">
-                        <button className="p-1 hover:bg-gray-700 rounded">
-                            <Plus size={14} className="text-gray-400" />
-                        </button>
-                        <button className="p-1 hover:bg-gray-700 rounded">
-                            <Search size={14} className="text-gray-400" />
-                        </button>
-                        <button className="p-1 hover:bg-gray-700 rounded">
-                            <MoreHorizontal size={14} className="text-gray-400" />
-                        </button>
+        <TooltipProvider>
+            <div className={cn(
+                "w-60 bg-zinc-900 border-r border-zinc-800 flex flex-col h-full",
+                className
+            )}>
+                {/* Header */}
+                <div className="p-2 border-b border-zinc-800">
+                    <div className="flex items-center justify-between">
+                        <span className="text-[10px] text-zinc-500 uppercase font-medium tracking-wider">
+                            Explorer
+                        </span>
+                        <div className="flex space-x-1">
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button 
+                                        variant="ghost" 
+                                        size="sm" 
+                                        className="p-1 h-6 w-6 hover:bg-zinc-800"
+                                    >
+                                        <Plus size={12} className="text-zinc-400" />
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent 
+                                    side="bottom" 
+                                    className="bg-zinc-900 border-zinc-700 text-zinc-200 text-xs"
+                                >
+                                    New File
+                                </TooltipContent>
+                            </Tooltip>
+                            
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button 
+                                        variant="ghost" 
+                                        size="sm" 
+                                        className="p-1 h-6 w-6 hover:bg-zinc-800"
+                                    >
+                                        <Search size={12} className="text-zinc-400" />
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent 
+                                    side="bottom" 
+                                    className="bg-zinc-900 border-zinc-700 text-zinc-200 text-xs"
+                                >
+                                    Search
+                                </TooltipContent>
+                            </Tooltip>
+                            
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button 
+                                        variant="ghost" 
+                                        size="sm" 
+                                        className="p-1 h-6 w-6 hover:bg-zinc-800"
+                                    >
+                                        <MoreHorizontal size={12} className="text-zinc-400" />
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent 
+                                    side="bottom" 
+                                    className="bg-zinc-900 border-zinc-700 text-zinc-200 text-xs"
+                                >
+                                    More Actions
+                                </TooltipContent>
+                            </Tooltip>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            {/* Project Tree */}
-            <div className="flex-1 overflow-auto">
-                {renderTree(projectTree)}
+                {/* Project Tree */}
+                <div className="flex-1 overflow-auto p-1">
+                    {renderTree(projectTree)}
+                </div>
             </div>
-        </div>
+        </TooltipProvider>
     );
 };
 

@@ -1,60 +1,78 @@
-// Frontend/src/pages/ces/components/CESLeftPanel.tsx
 import React from 'react';
-import { FileText } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+    FileText,
+    BarChart3,
+    Download
+} from 'lucide-react';
 
 const CESLeftPanel: React.FC = () => {
     return (
-        <div className="flex-1 p-6 overflow-auto">
+        <div className="flex-1 p-4 overflow-auto">
             {/* Annotated Frames Section */}
-            <div className="mb-6">
-                <h3 className="text-lg font-medium mb-4 text-white">Annotated Frames</h3>
-                <div className="bg-gray-800 border-2 border-dashed border-gray-600 rounded-lg h-80 flex items-center justify-center">
-                    <div className="text-center text-gray-400">
-                        <FileText className="w-16 h-16 mx-auto mb-4" />
-                        <p className="text-xl">No Frames</p>
+            <Card className="mb-4 bg-zinc-900 border-zinc-800">
+                <CardHeader className="pb-3">
+                    <CardTitle className="text-sm text-zinc-200">Annotated Frames</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="bg-zinc-800 border-2 border-dashed border-zinc-600 rounded-lg h-64 flex items-center justify-center">
+                        <div className="text-center text-zinc-400">
+                            <FileText className="w-12 h-12 mx-auto mb-2" />
+                            <p className="text-sm">No Frames</p>
+                        </div>
                     </div>
-                </div>
-            </div>
+                </CardContent>
+            </Card>
 
             {/* Traffic Critical Events Table */}
-            <div className="bg-gray-800 rounded-lg p-4">
-                <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-medium text-white">Traffic Critical Events</h3>
-                    <div className="flex items-center space-x-2">
-                        <select className="bg-gray-700 border border-gray-600 rounded px-3 py-1 text-sm text-white">
-                            <option>All Videos</option>
-                        </select>
-                        <button className="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-sm transition-colors text-white">
-                            KPI
-                        </button>
-                        <button className="bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-sm transition-colors text-white">
-                            Export
-                        </button>
+            <Card className="bg-zinc-900 border-zinc-800">
+                <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                        <CardTitle className="text-sm text-zinc-200">Traffic Critical Events</CardTitle>
+                        <div className="flex items-center space-x-2">
+                            <Select defaultValue="all-videos">
+                                <SelectTrigger className="w-32 h-7 text-xs bg-zinc-800 text-white border-zinc-700">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent className="bg-zinc-800  border-zinc-700">
+                                    <SelectItem value="all-videos"  >All Videos</SelectItem>
+                                </SelectContent>
+                            </Select>
+                            <Button size="sm" className="h-7 px-2 text-xs bg-blue-600 hover:bg-blue-700">
+                                <BarChart3 className="w-3 h-3 mr-1" />
+                                KPI
+                            </Button>
+                            <Button size="sm" className="h-7 px-2 text-xs bg-green-600 hover:bg-green-700">
+                                <Download className="w-3 h-3 mr-1" />
+                                Export
+                            </Button>
+                        </div>
                     </div>
-                </div>
-
-                {/* Table */}
-                <div className="overflow-x-auto">
-                    <table className="w-full">
-                        <thead>
-                            <tr className="border-b border-gray-700">
-                                <th className="text-left py-2 px-3 text-sm font-medium text-gray-300">S#</th>
-                                <th className="text-left py-2 px-3 text-sm font-medium text-gray-300">Frame Number</th>
-                                <th className="text-left py-2 px-3 text-sm font-medium text-gray-300">Det. Time</th>
-                                <th className="text-left py-2 px-3 text-sm font-medium text-gray-300">Anomaly Type</th>
-                                <th className="text-left py-2 px-3 text-sm font-medium text-gray-300">Confidence</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td colSpan={5} className="text-center py-8 text-gray-500">
+                </CardHeader>
+                <CardContent>
+                    <Table>
+                        <TableHeader>
+                            <TableRow className="border-zinc-700">
+                                <TableHead className="text-xs text-zinc-400">S#</TableHead>
+                                <TableHead className="text-xs text-zinc-400">Frame Number</TableHead>
+                                <TableHead className="text-xs text-zinc-400">Det. Time</TableHead>
+                                <TableHead className="text-xs text-zinc-400">Anomaly Type</TableHead>
+                                <TableHead className="text-xs text-zinc-400">Confidence</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            <TableRow>
+                                <TableCell colSpan={5} className="text-center py-8 text-zinc-500 text-xs">
                                     No data available
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                                </TableCell>
+                            </TableRow>
+                        </TableBody>
+                    </Table>
+                </CardContent>
+            </Card>
         </div>
     );
 };

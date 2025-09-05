@@ -1,5 +1,13 @@
-// Frontend/src/components/layout/Sidebar.tsx
 import React, { type JSX } from 'react';
+import { Button } from "@/components/ui/button";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
 import {
     Home,
     FolderOpen,
@@ -17,36 +25,37 @@ import {
 } from 'lucide-react';
 import CriticalEventSieve from '../../pages/ces/CriticalEventSieve';
 import Dashboard from '../../pages/Dashboard';
-import SceneGeneration from '../../pages/SceneGeneration';
-import ScenarioGeneration from '../../pages/ScenarioGeneration';
+import SceneGeneration from '../../pages/scenegeneration/SceneGeneration';
+import ScenarioGeneration from '../../pages/scenariogeneration/ScenarioGeneration';
 import DriveLab from '../../pages/DriveLab';
 import FileViewer from '../../pages/FileViewer';
 import Profile from '../../pages/Profile';
 import SettingsPage from '../../pages/SettingsPage';
 
 interface SidebarProps {
+    className?: string;
     onNavigateToTab: (tabName: string, component: JSX.Element, icon?: JSX.Element) => void;
     onToggleExplorer: () => void;
     isExplorerOpen: boolean;
+    activeTab?: string;
+    onLogout?: () => void;
 }
 
+type SidebarNavItem = {
+    name: string;
+    icon: React.ElementType;
+    component?: JSX.Element | (() => JSX.Element);
+};
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-const Sidebar: React.FC<SidebarProps> = ({ onNavigateToTab, onToggleExplorer, isExplorerOpen }) => {
-    const navigationItems = [
+const Sidebar: React.FC<SidebarProps> = ({
+    className,
+    onNavigateToTab,
+    onToggleExplorer,
+    isExplorerOpen,
+    activeTab,
+    onLogout
+}) => {
+    const navigationItems: SidebarNavItem[] = [
         {
             name: 'Dashboard',
             icon: Home,
@@ -79,7 +88,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onNavigateToTab, onToggleExplorer, is
         },
     ];
 
-    const toolItems = [
+    const toolItems: SidebarNavItem[] = [
         { name: 'Search', icon: Search },
         { name: 'Source Control', icon: GitBranch },
         { name: 'Run and Debug', icon: Bug },
@@ -87,7 +96,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onNavigateToTab, onToggleExplorer, is
         { name: 'Extensions', icon: Puzzle },
     ];
 
-    const bottomItems = [
+    const bottomItems: SidebarNavItem[] = [
         {
             name: 'Settings',
             icon: Settings,
@@ -96,79 +105,122 @@ const Sidebar: React.FC<SidebarProps> = ({ onNavigateToTab, onToggleExplorer, is
         {
             name: 'Profile',
             icon: User,
-            component: <Profile />
+            component: () => <Profile onLogout={onLogout} />
         },
     ];
 
-    type SidebarNavItem = {
-        name: string;
-        icon: React.ElementType;
-        component?: JSX.Element;
-    };
-
     const handleItemClick = (item: SidebarNavItem) => {
         if (item.component) {
-            onNavigateToTab(item.name, item.component, <item.icon size={16} />);
+            const component = typeof item.component === 'function' ? item.component() : item.component;
+            onNavigateToTab(item.name, component, <item.icon size={16} />);
         }
     };
 
-    return (
-        <div className="w-12 bg-gray-900 border-r border-gray-700 flex flex-col items-center py-2">
-            {/* Project Explorer */}
-            <div className="mb-4">
-                <button
-                    onClick={onToggleExplorer}
-                    className={`w-8 h-8 flex items-center justify-center rounded transition-colors ${isExplorerOpen
-                        ? 'bg-gray-700 text-white'
-                        : 'text-gray-400 hover:bg-gray-700 hover:text-white'
-                        }`}
-                    title={isExplorerOpen ? "Close Explorer" : "Open Explorer"}
+    const isActive = (itemName: string) => activeTab === itemName;
+
+    const renderSidebarButton = (
+        item: SidebarNavItem,
+        onClick?: () => void,
+        isActiveItem?: boolean
+    ) => (
+        <Tooltip key={item.name}>
+            <TooltipTrigger asChild>
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    className={cn(
+                        "w-8 h-8 p-0 rounded-md transition-all duration-200",
+                        isActiveItem
+                            ? "bg-zinc-800 text-white shadow-sm border border-zinc-700"
+                            : "text-zinc-400 hover:text-white hover:bg-zinc-800",
+                        "hover:scale-105"
+                    )}
+                    onClick={onClick}
                 >
-                    <FolderOpen size={16} />
-                </button>
-            </div>
+                    <item.icon size={16} />
+                </Button>
+            </TooltipTrigger>
+            <TooltipContent
+                side="right"
+                className="bg-zinc-900 border-zinc-700 text-zinc-200"
+                sideOffset={8}
+            >
+                {item.name}
+            </TooltipContent>
+        </Tooltip>
+    );
 
-            {/* Navigation Items */}
-            <div className="flex flex-col space-y-1 mb-4">
-                {navigationItems.map((item) => (
-                    <button
-                        key={item.name}
-                        onClick={() => handleItemClick(item)}
-                        className="w-8 h-8 flex items-center justify-center rounded hover:bg-gray-700 transition-colors text-gray-400 hover:text-white"
-                        title={item.name}
-                    >
-                        <item.icon size={16} />
-                    </button>
-                ))}
-            </div>
+    return (
+        <TooltipProvider delayDuration={300}>
+            <div className={cn(
+                "w-12 bg-zinc-900 border-r border-zinc-800 flex flex-col items-center py-3",
+                className
+            )}>
+                {/* Project Explorer */}
+                <div className="mb-3">
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className={cn(
+                                    "w-8 h-8 p-0 rounded-md transition-all duration-200",
+                                    isExplorerOpen
+                                        ? "bg-zinc-800 text-white shadow-sm border border-zinc-700"
+                                        : "text-zinc-400 hover:text-white hover:bg-zinc-800",
+                                    "hover:scale-105"
+                                )}
+                                onClick={onToggleExplorer}
+                            >
+                                <FolderOpen size={16} />
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent
+                            side="right"
+                            className="bg-zinc-900 border-zinc-700 text-zinc-200"
+                            sideOffset={8}
+                        >
+                            {isExplorerOpen ? "Close Explorer" : "Open Explorer"}
+                        </TooltipContent>
+                    </Tooltip>
+                </div>
 
-            {/* Tool Items */}
-            <div className="flex flex-col space-y-1 flex-1">
-                {toolItems.map((item, index) => (
-                    <button
-                        key={index}
-                        className="w-8 h-8 flex items-center justify-center rounded hover:bg-gray-700 transition-colors text-gray-400"
-                        title={item.name}
-                    >
-                        <item.icon size={16} />
-                    </button>
-                ))}
-            </div>
+                <Separator className="w-6 bg-zinc-700 mb-3" />
 
-            {/* Bottom Items */}
-            <div className="flex flex-col space-y-1 mt-4">
-                {bottomItems.map((item) => (
-                    <button
-                        key={item.name}
-                        onClick={() => handleItemClick(item)}
-                        className="w-8 h-8 flex items-center justify-center rounded hover:bg-gray-700 transition-colors text-gray-400 hover:text-white"
-                        title={item.name}
-                    >
-                        <item.icon size={16} />
-                    </button>
-                ))}
+                {/* Navigation Items */}
+                <div className="flex flex-col space-y-1 mb-3">
+                    {navigationItems.map((item) =>
+                        renderSidebarButton(
+                            item,
+                            () => handleItemClick(item),
+                            isActive(item.name)
+                        )
+                    )}
+                </div>
+
+                <Separator className="w-6 bg-zinc-700 mb-3" />
+
+                {/* Tool Items */}
+                <div className="flex flex-col space-y-1 flex-1">
+                    {toolItems.map((item) =>
+                        renderSidebarButton(item)
+                    )}
+                </div>
+
+                <Separator className="w-6 bg-zinc-700 mb-3" />
+
+                {/* Bottom Items */}
+                <div className="flex flex-col space-y-1">
+                    {bottomItems.map((item) =>
+                        renderSidebarButton(
+                            item,
+                            () => handleItemClick(item),
+                            isActive(item.name)
+                        )
+                    )}
+                </div>
             </div>
-        </div>
+        </TooltipProvider>
     );
 };
 

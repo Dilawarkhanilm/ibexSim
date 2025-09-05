@@ -1,8 +1,10 @@
-// Frontend/src/components/TabsContainer.tsx
 import React, { type JSX } from "react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { X } from "lucide-react";
 
 interface TabsContainerProps {
+    className?: string;
     tabs: { name: string; component: JSX.Element; icon?: JSX.Element }[];
     activeTab: string | null;
     setActiveTab: (tabName: string) => void;
@@ -10,47 +12,80 @@ interface TabsContainerProps {
 }
 
 const TabsContainer: React.FC<TabsContainerProps> = ({
+    className,
     tabs,
     activeTab,
     setActiveTab,
     onCloseTab,
 }) => {
     return (
-        <div className="w-full bg-gray-800 border-b border-gray-700">
-            <div className="flex overflow-x-auto">
+        <div className={cn(
+            "w-full bg-zinc-900 border-b border-zinc-800",
+            className
+        )}>
+            <div className="flex overflow-x-auto scrollbar-hide">
                 {tabs.map((tab) => (
                     <div
                         key={tab.name}
-                        className={`relative flex items-center min-w-0 max-w-xs border-r border-gray-700 ${activeTab === tab.name
-                                ? "bg-gray-700 text-white"
-                                : "bg-gray-800 text-gray-400 hover:bg-gray-750"
-                            }`}
+                        className={cn(
+                            "relative flex items-center min-w-0 max-w-xs border-r border-zinc-800 group",
+                            activeTab === tab.name
+                                ? "bg-zinc-800 text-white"
+                                : "bg-zinc-900 text-zinc-400 hover:bg-zinc-800"
+                        )}
                     >
-                        <button
+                        <Button
+                            variant="ghost"
                             onClick={() => setActiveTab(tab.name)}
-                            className="flex items-center px-3 py-2 text-sm focus:outline-none w-full min-w-0"
+                            className={cn(
+                                "flex items-center px-3 py-1.5 text-xs h-8 flex-1 min-w-0 justify-start rounded-none border-0 pr-1",
+                                activeTab === tab.name
+                                    ? "text-white hover:text-white hover:bg-zinc-800"
+                                    : "text-zinc-400 hover:text-white hover:bg-zinc-800"
+                            )}
                         >
                             {tab.icon && (
                                 <span className="mr-2 flex-shrink-0">
-                                    {tab.icon}
+                                    {React.isValidElement(tab.icon)
+                                        ? React.cloneElement(tab.icon as React.ReactElement<any>, { className: "w-3 h-3" })
+                                        : tab.icon
+                                    }
                                 </span>
                             )}
-                            <span className="truncate flex-1">{tab.name}</span>
-                        </button>
+                            <span className="truncate text-left">{tab.name}</span>
+                        </Button>
 
-                        <button
+                        <Button
+                            variant="ghost"
+                            size="sm"
                             onClick={(e) => {
                                 e.stopPropagation();
                                 onCloseTab(tab.name);
                             }}
-                            className={`px-2 py-2 hover:bg-gray-600 focus:outline-none ${activeTab === tab.name ? "text-gray-300" : "text-gray-500"
-                                } hover:text-white`}
+                            className={cn(
+                                "p-0 h-6 w-6 mr-1 rounded hover:bg-zinc-700 border-0 flex-shrink-0",
+                                activeTab === tab.name
+                                    ? "text-zinc-300 hover:text-white"
+                                    : "text-zinc-500 hover:text-white",
+                                "opacity-0 group-hover:opacity-100 transition-opacity"
+                            )}
                         >
-                            <X size={14} />
-                        </button>
+                            <X className="w-3 h-3" />
+                        </Button>
                     </div>
                 ))}
             </div>
+
+            {/* Custom scrollbar styles */}
+            <style  >{`
+                .scrollbar-hide {
+                    -ms-overflow-style: none;
+                    scrollbar-width: none;
+                }
+                .scrollbar-hide::-webkit-scrollbar {
+                    display: none;
+                }
+            `}</style>
         </div>
     );
 };

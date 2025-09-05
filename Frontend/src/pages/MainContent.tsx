@@ -1,4 +1,3 @@
-// Frontend/src/pages/MainContent.tsx
 import React, { useEffect, type JSX } from 'react';
 import Sidebar from '../components/layout/Sidebar';
 import StatusBar from '../components/layout/StatusBar';
@@ -8,14 +7,13 @@ import ProjectExplorer from '../components/ProjectExplorer';
 import { TabManagerProvider, useTabManager } from '../contexts/TabManagerContext';
 import { Home, Activity, FileText } from 'lucide-react';
 import Dashboard from './Dashboard';
+import Profile from './Profile';
 
 interface MainContentProps {
   onLogout: () => void;
 }
 
-
-
-const MainContentInner: React.FC<MainContentProps> = () => {
+const MainContentInner: React.FC<MainContentProps> = ({ onLogout }) => {
   const { tabList, activeTab, addTab, removeTab, setActiveTab, clearAllTabs } = useTabManager();
   const [showProjectExplorer, setShowProjectExplorer] = React.useState(true);
   const [currentView, setCurrentView] = React.useState<'dashboard' | 'tabs'>('dashboard');
@@ -44,10 +42,16 @@ const MainContentInner: React.FC<MainContentProps> = () => {
       // If tab exists, just switch to it
       setActiveTab(tabName);
     } else {
+      // Create component with logout prop if it's Profile
+      let finalComponent = component;
+      if (tabName === 'Profile') {
+        finalComponent = <Profile onLogout={onLogout} />;
+      }
+
       // If tab doesn't exist, create it and switch to it
       addTab({
         name: tabName,
-        component,
+        component: finalComponent,
         icon
       });
       setActiveTab(tabName);
@@ -106,17 +110,18 @@ const MainContentInner: React.FC<MainContentProps> = () => {
   // Dashboard View - Full screen without tabs or project explorer
   if (currentView === 'dashboard') {
     return (
-      <div className="h-full flex flex-col ">
+      <div className="h-full flex flex-col">
         <div className="flex-1 flex overflow-hidden">
           {/* Sidebar */}
           <Sidebar
             onNavigateToTab={handleNavigateToTab}
             onToggleExplorer={handleToggleExplorer}
             isExplorerOpen={false} // Force closed for dashboard
+            activeTab="Dashboard"
           />
 
           {/* Dashboard Content - Full width */}
-          <div className="flex-1 overflow-hidden ">
+          <div className="flex-1 overflow-hidden">
             <Dashboard />
           </div>
         </div>
@@ -129,13 +134,14 @@ const MainContentInner: React.FC<MainContentProps> = () => {
 
   // Tabs View - Show tabs, project explorer, and tab content
   return (
-    <div className="h-full flex flex-col bg-gray-900">
+    <div className="h-full flex flex-col bg-zinc-950">
       <div className="flex-1 flex overflow-hidden">
         {/* Sidebar */}
         <Sidebar
           onNavigateToTab={handleNavigateToTab}
           onToggleExplorer={handleToggleExplorer}
           isExplorerOpen={showProjectExplorer}
+          activeTab={activeTab || undefined}
         />
 
         {/* Project Explorer - with smooth transition */}
@@ -144,7 +150,7 @@ const MainContentInner: React.FC<MainContentProps> = () => {
         </div>
 
         {/* Main Content Area */}
-        <div className="flex-1 flex flex-col overflow-hidden ">
+        <div className="flex-1 flex flex-col overflow-hidden">
           {/* Tabs - Only show when not on dashboard */}
           {tabList.length > 0 && (
             <TabsContainer
@@ -156,7 +162,7 @@ const MainContentInner: React.FC<MainContentProps> = () => {
           )}
 
           {/* Tab Content */}
-          <div className="flex-1 overflow-hidden  overflow-y-auto  ">
+          <div className="flex-1 overflow-hidden overflow-y-auto">
             {tabList.length > 0 ? (
               <TabContent
                 tabs={tabList}
@@ -166,9 +172,9 @@ const MainContentInner: React.FC<MainContentProps> = () => {
               // Empty state when no tabs
               <div className="flex-1 flex items-center justify-center text-white">
                 <div className="text-center">
-                  <Home size={48} className="mx-auto mb-4 text-gray-500" />
-                  <h2 className="text-xl font-semibold mb-2">No tabs open</h2>
-                  <p className="text-gray-400">Click on sidebar items or project files to get started</p>
+                  <Home size={48} className="mx-auto mb-4 text-zinc-500" />
+                  <h2 className="text-xl font-semibold mb-2 text-zinc-200">No tabs open</h2>
+                  <p className="text-zinc-400 text-sm">Click on sidebar items or project files to get started</p>
                 </div>
               </div>
             )}
