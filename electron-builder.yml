@@ -1,23 +1,94 @@
-appId: com.cortex.app
+appId: com.ibexvision.cortex
 productName: Cortex
+artifactName: "${productName}-${version}-${os}-${arch}.${ext}"
+
 files:
   - "main.js"
   - "preload.js"
   - "splash.html"
   - "assets/**"
   - "Frontend/dist/**"
+  - "package.json"
+  - "!**/node_modules/**"
+  - "!Frontend/src/**"
+  - "!Frontend/public/**"
+  - "!scripts/**"
+  - "!*.config.*"
+  - "!.env*"
+  - "!README.md"
+  - "!.gitignore"
+
 asar: true
+compression: maximum
+npmRebuild: false
+buildDependenciesFromSource: false
+
 directories:
   output: "dist"
+  buildResources: "assets"
+
 win:
-  target: ["nsis"]
-  icon: "assets/icons/icon.png"
+  target:
+    - target: nsis
+      arch: [x64, ia32]
+  icon: "assets/logo/icon.ico"
+  requestedExecutionLevel: asInvoker
+  verifyUpdateCodeSignature: false
+
+nsis:
+  oneClick: false
+  allowElevation: true
+  allowToChangeInstallationDirectory: true
+  perMachine: false
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: "Cortex"
+  deleteAppDataOnUninstall: false
+  artifactName: "${productName}-Setup-${version}.exe"
+  warningsAsErrors: false
+  # Show “Run Cortex” checkbox on Finish page
+  runAfterFinish: true
+
+  # Optional: show license page (file must exist)
+  license: "assets/license.txt"
+
+  # Branding (24-bit BMPs, exact sizes)
+  installerIcon: assets/logo/installer.ico
+  uninstallerIcon: assets/logo/uninstaller.ico
+  installerHeader: assets/logo/installer-header.bmp        # 150x57
+  installerSidebar: assets/logo/installer-sidebar.bmp       # 164x314
+  uninstallerSidebar: assets/logo/uninstaller-sidebar.bmp   # 164x314
+
+  # Merge our custom defines/hooks
+  include: "assets/installer-script.nsh"
+
 mac:
-  target: ["dmg"]
-  icon: "assets/icons/icon.icns"
+  target: [dmg, zip]
+  category: public.app-category.productivity
+  icon: "assets/logo/icon.icns"
+  hardenedRuntime: true
+  gatekeeperAssess: false
+
+dmg:
+  artifactName: "${productName}-${version}-macOS.dmg"
+
 linux:
-  target: ["AppImage"]
-  category: "Utility"
-extraResources:
-  - from: "assets/"
-    to: "assets"
+  target: [AppImage, deb]
+  category: Utility
+  icon: "assets/logo"
+  synopsis: "Cortex — Advanced AI Desktop Application"
+  description: |
+    Cortex is a powerful desktop application that brings AI capabilities
+    to your workflow. Built with Electron + React and optimized for performance.
+
+deb:
+  artifactName: "${productName}_${version}_${arch}.deb"
+  depends: ["libnotify4", "libnss3", "libatk1.0-0", "libxss1", "libxtst6"]
+
+appImage:
+  artifactName: "${productName}-${version}-${arch}.AppImage"
+
+buildVersion: "1.0.0.0"
+electronVersion: "37.4.0"
+forceCodeSigning: false
+detectUpdateChannel: true

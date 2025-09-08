@@ -2,15 +2,24 @@
   "name": "cortex",
   "version": "1.0.0",
   "description": "Cortex - Electron + React (TS) desktop app",
+  "author": "ibexVision <support@ibexvision.ai>",
+  "license": "MIT",
+  "homepage": "https://ibexvision.ai",
   "main": "main.js",
   "scripts": {
     "dev": "concurrently -k \"npm:dev:renderer\" \"npm:dev:electron\"",
     "dev:renderer": "npm --prefix Frontend run dev",
-    "dev:electron": "wait-on tcp:5173 && cross-env NODE_ENV=development OPEN_DEVTOOLS=0 electron .",
+    "dev:electron": "npm run wait-for-renderer && cross-env NODE_ENV=development OPEN_DEVTOOLS=0 electron .",
+    "wait-for-renderer": "node scripts/wait-for-renderer.js",
     "build:renderer": "npm --prefix Frontend run build",
     "build": "npm run build:renderer",
+    "build:win": "npm run build && electron-builder --win",
+    "build:mac": "npm run build && electron-builder --mac",
+    "build:linux": "npm run build && electron-builder --linux",
     "package": "npm run build && electron-builder",
-    "clean": "rimraf dist Frontend/dist"
+    "clean": "rimraf dist Frontend/dist Frontend/node_modules/.vite",
+    "dev:debug": "concurrently -k \"npm:dev:renderer\" \"npm:dev:electron:debug\"",
+    "dev:electron:debug": "npm run wait-for-renderer && cross-env NODE_ENV=development OPEN_DEVTOOLS=1 electron ."
   },
   "devDependencies": {
     "concurrently": "^9.2.1",

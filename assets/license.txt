@@ -1,0 +1,34 @@
+END USER LICENSE AGREEMENT FOR CORTEX
+
+Copyright (c) 2025 ibexVision. All rights reserved.
+
+IMPORTANT - READ CAREFULLY: This End User License Agreement ("EULA") is a legal agreement between you (either an individual or a single entity) and ibexVision for the Cortex software product, which includes computer software and may include associated media, printed materials, and "online" or electronic documentation ("Software").
+
+BY INSTALLING, COPYING, OR OTHERWISE USING THE SOFTWARE, YOU AGREE TO BE BOUND BY THE TERMS OF THIS EULA. IF YOU DO NOT AGREE TO THE TERMS OF THIS EULA, DO NOT INSTALL OR USE THE SOFTWARE.
+
+1. GRANT OF LICENSE
+ibexVision grants you a non-exclusive, non-transferable license to use the Software on a single computer.
+
+2. RESTRICTIONS
+You may not:
+- Copy the Software (except for backup purposes)
+- Distribute, rent, lease, or sublicense the Software
+- Reverse engineer, decompile, or disassemble the Software
+- Remove any proprietary notices or labels on the Software
+
+3. INTELLECTUAL PROPERTY
+The Software is protected by copyright laws and international copyright treaties, as well as other intellectual property laws and treaties. The Software is licensed, not sold.
+
+4. TERMINATION
+This license is effective until terminated. Your rights under this license will terminate automatically without notice if you fail to comply with any term(s) of this EULA.
+
+5. DISCLAIMER OF WARRANTIES
+THE SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+
+6. LIMITATION OF LIABILITY
+IN NO EVENT SHALL IBEXVISION BE LIABLE FOR ANY DAMAGES WHATSOEVER ARISING OUT OF THE USE OF OR INABILITY TO USE THE SOFTWARE.
+
+7. GOVERNING LAW
+This EULA shall be governed by the laws of the jurisdiction in which ibexVision is incorporated.
+
+If you have any questions concerning this EULA, please contact support@ibexvision.ai.
