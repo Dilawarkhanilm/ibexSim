@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -8,13 +8,14 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import {
     Upload,
-    Play
+    X,
+    FileVideo
 } from 'lucide-react';
 
 const CESRightPanel: React.FC = () => {
     const [confidenceThreshold, setConfidenceThreshold] = useState([50]);
     const [selectedModel, setSelectedModel] = useState('FlowWatch-Mini');
-    const [clipDuration, setClipDuration] = useState('');
+    const [clipDuration, setClipDuration] = useState('60');
     const [videoQuality, setVideoQuality] = useState({
         low: true,
         medium: false,
@@ -23,12 +24,77 @@ const CESRightPanel: React.FC = () => {
     const [batchProcessing, setBatchProcessing] = useState(true);
     const [autoPause, setAutoPause] = useState(false);
     const [selectedFilter, setSelectedFilter] = useState('All');
+    const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+    const [isDragOver, setIsDragOver] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const handleVideoQualityChange = (quality: 'low' | 'medium' | 'high', checked: boolean) => {
-        setVideoQuality(prev => ({
-            ...prev,
-            [quality]: checked
-        }));
+    const handleVideoQualityChange = (
+        quality: 'low' | 'medium' | 'high',
+        checked: boolean
+    ) => {
+        setVideoQuality((prev) => {
+            if (checked) {
+                return {
+                    low: quality === 'low',
+                    medium: quality === 'medium',
+                    high: quality === 'high',
+                };
+            }
+            if (prev[quality]) return prev;
+
+            return prev;
+        });
+    };
+
+    const handleFileUpload = (file: File) => {
+        if (file && file.type.startsWith('video/')) {
+            setUploadedFile(file);
+        }
+    };
+
+    const handleFileInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            handleFileUpload(file);
+        }
+    };
+
+    const handleDragOver = (event: React.DragEvent) => {
+        event.preventDefault();
+        setIsDragOver(true);
+    };
+
+    const handleDragLeave = (event: React.DragEvent) => {
+        event.preventDefault();
+        setIsDragOver(false);
+    };
+
+    const handleDrop = (event: React.DragEvent) => {
+        event.preventDefault();
+        setIsDragOver(false);
+        const file = event.dataTransfer.files[0];
+        if (file) {
+            handleFileUpload(file);
+        }
+    };
+
+    const handleUploadButtonClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    const handleDeleteFile = () => {
+        setUploadedFile(null);
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
+    };
+
+    const formatFileSize = (bytes: number) => {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     };
 
     const filterOptions = [
@@ -53,7 +119,11 @@ const CESRightPanel: React.FC = () => {
                 <Card className="bg-zinc-800 border-zinc-700">
                     <CardContent className="p-3 space-y-3">
                         <div className="flex space-x-2">
-                            <Button size="sm" className="flex-1 h-8 text-xs bg-blue-600 hover:bg-blue-700">
+                            <Button
+                                size="sm"
+                                className="flex-1 h-8 text-xs bg-blue-600 hover:bg-blue-700 cursor-pointer"
+                                onClick={handleUploadButtonClick}
+                            >
                                 <Upload className="w-3 h-3 mr-1" />
                                 Upload by file
                             </Button>
@@ -62,45 +132,90 @@ const CESRightPanel: React.FC = () => {
                             </Button>
                         </div>
 
+                        {/* Hidden file input */}
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="video/mp4,video/avi,video/mov,video/wmv,video/mkv"
+                            onChange={handleFileInputChange}
+                            className="hidden"
+                        />
+
                         {/* Stylized Upload Area */}
-                        <div className="relative p-6">
+                        <div
+                            className={`relative p-6 cursor-pointer transition-colors ${isDragOver ? 'bg-zinc-700/50' : ''
+                                }`}
+                            onDragOver={handleDragOver}
+                            onDragLeave={handleDragLeave}
+                            onDrop={handleDrop}
+                            onClick={handleUploadButtonClick}
+                        >
                             {/* Corner borders */}
                             <div className="absolute inset-0 pointer-events-none">
                                 {/* Top-left corner */}
                                 <div className="absolute top-0 left-0 w-8 h-8">
-                                    <div className="absolute top-0 left-0 w-8 h-0.5 bg-zinc-600"></div>
-                                    <div className="absolute top-0 left-0 w-0.5 h-8 bg-zinc-600"></div>
+                                    <div className={`absolute top-0 left-0 w-8 h-0.5 ${isDragOver ? 'bg-blue-500' : 'bg-zinc-600'}`}></div>
+                                    <div className={`absolute top-0 left-0 w-0.5 h-8 ${isDragOver ? 'bg-blue-500' : 'bg-zinc-600'}`}></div>
                                 </div>
                                 {/* Top-right corner */}
                                 <div className="absolute top-0 right-0 w-8 h-8">
-                                    <div className="absolute top-0 right-0 w-8 h-0.5 bg-zinc-600"></div>
-                                    <div className="absolute top-0 right-0 w-0.5 h-8 bg-zinc-600"></div>
+                                    <div className={`absolute top-0 right-0 w-8 h-0.5 ${isDragOver ? 'bg-blue-500' : 'bg-zinc-600'}`}></div>
+                                    <div className={`absolute top-0 right-0 w-0.5 h-8 ${isDragOver ? 'bg-blue-500' : 'bg-zinc-600'}`}></div>
                                 </div>
                                 {/* Bottom-left corner */}
                                 <div className="absolute bottom-0 left-0 w-8 h-8">
-                                    <div className="absolute bottom-0 left-0 w-8 h-0.5 bg-zinc-600"></div>
-                                    <div className="absolute bottom-0 left-0 w-0.5 h-8 bg-zinc-600"></div>
+                                    <div className={`absolute bottom-0 left-0 w-8 h-0.5 ${isDragOver ? 'bg-blue-500' : 'bg-zinc-600'}`}></div>
+                                    <div className={`absolute bottom-0 left-0 w-0.5 h-8 ${isDragOver ? 'bg-blue-500' : 'bg-zinc-600'}`}></div>
                                 </div>
                                 {/* Bottom-right corner */}
                                 <div className="absolute bottom-0 right-0 w-8 h-8">
-                                    <div className="absolute bottom-0 right-0 w-8 h-0.5 bg-zinc-600"></div>
-                                    <div className="absolute bottom-0 right-0 w-0.5 h-8 bg-zinc-600"></div>
+                                    <div className={`absolute bottom-0 right-0 w-8 h-0.5 ${isDragOver ? 'bg-blue-500' : 'bg-zinc-600'}`}></div>
+                                    <div className={`absolute bottom-0 right-0 w-0.5 h-8 ${isDragOver ? 'bg-blue-500' : 'bg-zinc-600'}`}></div>
                                 </div>
                                 {/* Top center */}
-                                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-8 h-0.5 bg-zinc-600"></div>
+                                <div className={`absolute top-0 left-1/2 transform -translate-x-1/2 w-8 h-0.5 ${isDragOver ? 'bg-blue-500' : 'bg-zinc-600'}`}></div>
                                 {/* Bottom center */}
-                                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-8 h-0.5 bg-zinc-600"></div>
+                                <div className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 w-8 h-0.5 ${isDragOver ? 'bg-blue-500' : 'bg-zinc-600'}`}></div>
                                 {/* Left center */}
-                                <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-0.5 h-8 bg-zinc-600"></div>
+                                <div className={`absolute left-0 top-1/2 transform -translate-y-1/2 w-0.5 h-8 ${isDragOver ? 'bg-blue-500' : 'bg-zinc-600'}`}></div>
                                 {/* Right center */}
-                                <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-0.5 h-8 bg-zinc-600"></div>
+                                <div className={`absolute right-0 top-1/2 transform -translate-y-1/2 w-0.5 h-8 ${isDragOver ? 'bg-blue-500' : 'bg-zinc-600'}`}></div>
                             </div>
-                            
+
                             {/* Center content */}
-                            <div className="flex flex-col items-center justify-center h-20 space-y-2">
-                                <Upload className="w-6 h-6 text-zinc-400" />
-                                <span className="text-xs text-zinc-400">Upload video to extract TCE's</span>
-                            </div>
+                            {uploadedFile ? (
+                                <div className="flex items-center justify-between h-20 px-2">
+                                    <div className="flex items-center space-x-2 flex-1 min-w-0">
+                                        <FileVideo className="w-4 h-4 text-blue-400 flex-shrink-0" />
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-xs text-zinc-200 truncate font-medium">
+                                                {uploadedFile.name}
+                                            </p>
+                                            <p className="text-xs text-zinc-500">
+                                                {formatFileSize(uploadedFile.size)}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        className="h-6 w-6 p-0 hover:bg-red-600/20 flex-shrink-0 cursor-pointer"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleDeleteFile();
+                                        }}
+                                    >
+                                        <X className="w-3 h-3 text-red-400 " />
+                                    </Button>
+                                </div>
+                            ) : (
+                                <div className="flex flex-col items-center justify-center h-20 space-y-2">
+                                    <Upload className={`w-6 h-6 ${isDragOver ? 'text-blue-400' : 'text-zinc-400'}`} />
+                                    <span className={`text-xs ${isDragOver ? 'text-blue-400' : 'text-zinc-400'}`}>
+                                        {isDragOver ? 'Drop video here' : 'Upload video to extract TCE\'s'}
+                                    </span>
+                                </div>
+                            )}
                         </div>
                     </CardContent>
                 </Card>
@@ -140,9 +255,15 @@ const CESRightPanel: React.FC = () => {
                     <Input
                         type="number"
                         value={clipDuration}
-                        onChange={(e) => setClipDuration(e.target.value)}
+                        onChange={(e) => {
+                            const val = Number(e.target.value);
+                            if (val >= 0 || e.target.value === "") {
+                                setClipDuration(e.target.value);
+                            }
+                        }}
+                        min={0}
                         placeholder="Enter duration"
-                        className="h-8 text-xs bg-zinc-800 border-zinc-700"
+                        className="h-8 text-xs bg-zinc-800 border-zinc-700 placeholder:text-xs no-spinner"
                     />
                 </div>
 
@@ -155,8 +276,9 @@ const CESRightPanel: React.FC = () => {
                                 <Checkbox
                                     id={quality}
                                     checked={videoQuality[quality]}
-                                    onCheckedChange={(checked) => handleVideoQualityChange(quality, checked as boolean)}
-                                    // className="h-3 w-3"
+                                    onCheckedChange={(checked) =>
+                                        handleVideoQualityChange(quality, checked === true)
+                                    }
                                 />
                                 <Label htmlFor={quality} className="text-xs text-zinc-400 capitalize">
                                     {quality}
@@ -173,7 +295,6 @@ const CESRightPanel: React.FC = () => {
                             id="batch-processing"
                             checked={batchProcessing}
                             onCheckedChange={(checked) => setBatchProcessing(checked === true)}
-                            // className="h-3 w-3"
                         />
                         <Label htmlFor="batch-processing" className="text-xs text-zinc-400">
                             Batch Processing
@@ -185,7 +306,6 @@ const CESRightPanel: React.FC = () => {
                             id="auto-pause"
                             checked={autoPause}
                             onCheckedChange={(checked) => setAutoPause(checked === true)}
-                            // className="h-3 w-3"
                         />
                         <Label htmlFor="auto-pause" className="text-xs text-zinc-400">
                             Auto-Pause
@@ -194,7 +314,7 @@ const CESRightPanel: React.FC = () => {
                 </div>
 
                 {/* Filter */}
-                <div className="space-y-2 ">
+                <div className="space-y-2">
                     <Label className="text-xs text-zinc-300">Filter</Label>
                     <Select value={selectedFilter} onValueChange={setSelectedFilter}>
                         <SelectTrigger className="h-8 text-xs bg-zinc-800 border-zinc-700 w-full">
@@ -209,12 +329,6 @@ const CESRightPanel: React.FC = () => {
                         </SelectContent>
                     </Select>
                 </div>
-
-                {/* Play Button */}
-                <Button className="w-full h-9 bg-blue-600 hover:bg-blue-700 text-xs">
-                    <Play className="w-3 h-3 mr-1" />
-                    Play
-                </Button>
             </div>
         </div>
     );

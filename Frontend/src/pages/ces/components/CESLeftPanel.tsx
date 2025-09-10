@@ -38,14 +38,14 @@ const CESLeftPanel: React.FC = () => {
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent className="bg-zinc-800  border-zinc-700">
-                                    <SelectItem value="all-videos"  >All Videos</SelectItem>
+                                    <SelectItem value="all-videos" className='text-xs'>All Videos</SelectItem>
                                 </SelectContent>
                             </Select>
-                            <Button size="sm" className="h-7 px-2 text-xs bg-blue-600 hover:bg-blue-700">
+                            <Button size="sm" className="h-9 px-2 text-xs bg-zinc-700 hover:bg-zinc-600">
                                 <BarChart3 className="w-3 h-3 mr-1" />
                                 KPI
                             </Button>
-                            <Button size="sm" className="h-7 px-2 text-xs bg-green-600 hover:bg-green-700">
+                            <Button size="sm" className="h-9 px-2 text-xs bg-zinc-700 hover:bg-zinc-600">
                                 <Download className="w-3 h-3 mr-1" />
                                 Export
                             </Button>
