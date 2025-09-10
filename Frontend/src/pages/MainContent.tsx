@@ -122,7 +122,7 @@ const MainContentInner: React.FC<MainContentProps> = ({ onLogout }) => {
 
           {/* Dashboard Content - Full width */}
           <div className="flex-1 overflow-hidden">
-            <Dashboard />
+            <Dashboard onNavigateToTab={handleNavigateToTab} />
           </div>
         </div>
 

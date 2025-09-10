@@ -31,6 +31,7 @@ import DriveLab from '../../pages/DriveLab';
 import FileViewer from '../../pages/FileViewer';
 import Profile from '../../pages/Profile';
 import SettingsPage from '../../pages/SettingsPage';
+import Welcome from '@/pages/Welcome';
 
 interface SidebarProps {
     className?: string;
@@ -60,6 +61,11 @@ const Sidebar: React.FC<SidebarProps> = ({
             name: 'Dashboard',
             icon: Home,
             component: <Dashboard />
+        },
+        {
+            name: 'Welcome',
+            icon: Home,
+            component: <Welcome />
         },
         {
             name: 'Critical Event Sieve',

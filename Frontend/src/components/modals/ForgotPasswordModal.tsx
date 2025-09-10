@@ -51,12 +51,12 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClo
       
       {/* Modal */}
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div className="bg-zinc-900 border border-zinc-700 rounded-xl shadow-2xl w-full max-w-md relative">
+        <div className="bg-card border border-border rounded-xl shadow-2xl w-full max-w-md relative">
           {/* Close button */}
           <button
             onClick={handleClose}
             disabled={isSubmitting}
-            className="absolute top-4 right-4 text-zinc-400 hover:text-zinc-200 transition-colors disabled:opacity-50"
+            className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
           >
             <X size={20} />
           </button>
@@ -65,15 +65,15 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClo
             {!isSuccess ? (
               <>
                 <div className="mb-6">
-                  <h2 className="text-xl font-semibold text-white mb-2">Reset Password</h2>
-                  <p className="text-sm text-zinc-400">
+                  <h2 className="text-xl font-semibold text-foreground mb-2">Reset Password</h2>
+                  <p className="text-sm text-muted-foreground">
                     Enter your email address and we'll send you a link to reset your password.
                   </p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-zinc-400" />
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
                     <input
                       type="email"
                       placeholder="Enter your email"
@@ -81,7 +81,7 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClo
                       onChange={(e) => setEmail(e.target.value)}
                       required
                       disabled={isSubmitting}
-                      className="w-full pl-10 pr-4 py-3 bg-zinc-800 border border-zinc-600 rounded-lg text-white placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                      className="w-full pl-10 pr-4 py-3 bg-input border border-border rounded-lg text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                     />
                   </div>
 
@@ -90,18 +90,18 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClo
                       type="button"
                       onClick={handleClose}
                       disabled={isSubmitting}
-                      className="flex-1 px-4 py-2.5 border border-zinc-600 text-zinc-300 rounded-lg hover:bg-zinc-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="flex-1 px-4 py-2.5 border border-border text-muted-foreground rounded-lg hover:bg-accent hover:text-accent-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
                       disabled={isSubmitting || !email.trim()}
-                      className="flex-1 px-4 py-2.5 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+                      className="flex-1 px-4 py-2.5 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
                     >
                       {isSubmitting ? (
                         <>
-                          <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                          <div className="w-4 h-4 border-2 border-primary-foreground/20 border-t-primary-foreground rounded-full animate-spin" />
                           Sending...
                         </>
                       ) : (
@@ -121,11 +121,11 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClo
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-2">Email Sent!</h3>
-                <p className="text-sm text-zinc-400 mb-4">
-                  We've sent a password reset link to <span className="text-white">{email}</span>
+                <h3 className="text-lg font-semibold text-foreground mb-2">Email Sent!</h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  We've sent a password reset link to <span className="text-foreground">{email}</span>
                 </p>
-                <p className="text-xs text-zinc-500">
+                <p className="text-xs text-muted-foreground">
                   This window will close automatically in a few seconds.
                 </p>
               </div>
