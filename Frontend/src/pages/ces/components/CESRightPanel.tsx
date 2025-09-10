@@ -62,10 +62,44 @@ const CESRightPanel: React.FC = () => {
                             </Button>
                         </div>
 
-                        <div className="border-2 border-dashed border-zinc-600 rounded-lg p-4 text-center">
-                            <p className="text-xs text-zinc-400 mb-2">Upload your video to extract TCE's</p>
-                            <div className="bg-zinc-700 border-2 border-dashed border-zinc-500 rounded h-20 flex items-center justify-center">
-                                <span className="text-xs text-zinc-400">Upload your video</span>
+                        {/* Stylized Upload Area */}
+                        <div className="relative p-6">
+                            {/* Corner borders */}
+                            <div className="absolute inset-0 pointer-events-none">
+                                {/* Top-left corner */}
+                                <div className="absolute top-0 left-0 w-8 h-8">
+                                    <div className="absolute top-0 left-0 w-8 h-0.5 bg-zinc-600"></div>
+                                    <div className="absolute top-0 left-0 w-0.5 h-8 bg-zinc-600"></div>
+                                </div>
+                                {/* Top-right corner */}
+                                <div className="absolute top-0 right-0 w-8 h-8">
+                                    <div className="absolute top-0 right-0 w-8 h-0.5 bg-zinc-600"></div>
+                                    <div className="absolute top-0 right-0 w-0.5 h-8 bg-zinc-600"></div>
+                                </div>
+                                {/* Bottom-left corner */}
+                                <div className="absolute bottom-0 left-0 w-8 h-8">
+                                    <div className="absolute bottom-0 left-0 w-8 h-0.5 bg-zinc-600"></div>
+                                    <div className="absolute bottom-0 left-0 w-0.5 h-8 bg-zinc-600"></div>
+                                </div>
+                                {/* Bottom-right corner */}
+                                <div className="absolute bottom-0 right-0 w-8 h-8">
+                                    <div className="absolute bottom-0 right-0 w-8 h-0.5 bg-zinc-600"></div>
+                                    <div className="absolute bottom-0 right-0 w-0.5 h-8 bg-zinc-600"></div>
+                                </div>
+                                {/* Top center */}
+                                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-8 h-0.5 bg-zinc-600"></div>
+                                {/* Bottom center */}
+                                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-8 h-0.5 bg-zinc-600"></div>
+                                {/* Left center */}
+                                <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-0.5 h-8 bg-zinc-600"></div>
+                                {/* Right center */}
+                                <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-0.5 h-8 bg-zinc-600"></div>
+                            </div>
+                            
+                            {/* Center content */}
+                            <div className="flex flex-col items-center justify-center h-20 space-y-2">
+                                <Upload className="w-6 h-6 text-zinc-400" />
+                                <span className="text-xs text-zinc-400">Upload video to extract TCE's</span>
                             </div>
                         </div>
                     </CardContent>
@@ -75,13 +109,13 @@ const CESRightPanel: React.FC = () => {
                 <div className="space-y-2">
                     <Label className="text-xs text-zinc-300">Select AI Model</Label>
                     <Select value={selectedModel} onValueChange={setSelectedModel}>
-                        <SelectTrigger className="h-8 text-xs bg-zinc-800 border-zinc-700">
+                        <SelectTrigger className="h-8 text-xs bg-zinc-800 border-zinc-700 w-full">
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent className="bg-zinc-800 border-zinc-700">
-                            <SelectItem value="FlowWatch-Mini">FlowWatch-Mini</SelectItem>
-                            <SelectItem value="FlowWatch-Pro">FlowWatch-Pro</SelectItem>
-                            <SelectItem value="FlowWatch-Max">FlowWatch-Max</SelectItem>
+                            <SelectItem value="FlowWatch-Mini" className='text-xs'>FlowWatch-Mini</SelectItem>
+                            <SelectItem value="FlowWatch-Pro" className='text-xs'>FlowWatch-Pro</SelectItem>
+                            <SelectItem value="FlowWatch-Max" className='text-xs'>FlowWatch-Max</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
@@ -122,7 +156,7 @@ const CESRightPanel: React.FC = () => {
                                     id={quality}
                                     checked={videoQuality[quality]}
                                     onCheckedChange={(checked) => handleVideoQualityChange(quality, checked as boolean)}
-                                    className="h-3 w-3"
+                                    // className="h-3 w-3"
                                 />
                                 <Label htmlFor={quality} className="text-xs text-zinc-400 capitalize">
                                     {quality}
@@ -139,7 +173,7 @@ const CESRightPanel: React.FC = () => {
                             id="batch-processing"
                             checked={batchProcessing}
                             onCheckedChange={(checked) => setBatchProcessing(checked === true)}
-                            className="h-3 w-3"
+                            // className="h-3 w-3"
                         />
                         <Label htmlFor="batch-processing" className="text-xs text-zinc-400">
                             Batch Processing
@@ -151,7 +185,7 @@ const CESRightPanel: React.FC = () => {
                             id="auto-pause"
                             checked={autoPause}
                             onCheckedChange={(checked) => setAutoPause(checked === true)}
-                            className="h-3 w-3"
+                            // className="h-3 w-3"
                         />
                         <Label htmlFor="auto-pause" className="text-xs text-zinc-400">
                             Auto-Pause
@@ -160,10 +194,10 @@ const CESRightPanel: React.FC = () => {
                 </div>
 
                 {/* Filter */}
-                <div className="space-y-2">
+                <div className="space-y-2 ">
                     <Label className="text-xs text-zinc-300">Filter</Label>
                     <Select value={selectedFilter} onValueChange={setSelectedFilter}>
-                        <SelectTrigger className="h-8 text-xs bg-zinc-800 border-zinc-700">
+                        <SelectTrigger className="h-8 text-xs bg-zinc-800 border-zinc-700 w-full">
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent className="bg-zinc-800 border-zinc-700">
