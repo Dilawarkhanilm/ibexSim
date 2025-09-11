@@ -67,6 +67,7 @@ const ToolBar: React.FC<ToolBarProps> = ({
     isPlaying = false,
     hasVideos = false
 }) => {
+    console.log(hasVideos)
     const toolbarItems = [
         // File operations group
         {

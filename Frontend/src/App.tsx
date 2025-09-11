@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import CustomTitleBar from "./components/CustomTitleBar";
 import MenuBar from "./components/MenuBar";
 import ToolBar from "./components/ToolBar";
@@ -17,6 +17,9 @@ const App: React.FC = () => {
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [uploadedVideos, setUploadedVideos] = useState<VideoFile[]>([]);
   const [selectedFilters, setSelectedFilters] = useState<string[]>(['All']);
+  const [currentTaskName, setCurrentTaskName] = useState<string>('');
+  const [hasLocation, setHasLocation] = useState(false);
+  const [hasTile, setHasTile] = useState(false);
   const [videoControlRef, setVideoControlRef] = useState<{
     play: () => void;
     pause: () => void;
@@ -39,6 +42,24 @@ const App: React.FC = () => {
     setSelectedFilters(filters);
   };
 
+  const handleTaskUpdate = (taskName: string) => {
+    setCurrentTaskName(taskName);
+  };
+
+  // Track location and tile selection state
+  useEffect(() => {
+    if (currentTaskName.includes('Location selected')) {
+      setHasLocation(true);
+    }
+    if (currentTaskName.includes('Tile selected')) {
+      setHasTile(true);
+    }
+    if (currentTaskName.includes('Reset to clean state')) {
+      setHasLocation(false);
+      setHasTile(false);
+    }
+  }, [currentTaskName]);
+
   // Video control handlers for toolbar
   const handlePlay = () => {
     videoControlRef?.play();
@@ -56,7 +77,7 @@ const App: React.FC = () => {
     videoControlRef?.restart();
   };
 
-  // Register video control methods (this would be called from CESLeftPanel)
+  // Register video control methods (this would be called from CESLeftPanel or SceneGeneration)
   const registerVideoControls = (controls: {
     play: () => void;
     pause: () => void;
@@ -65,6 +86,11 @@ const App: React.FC = () => {
   }) => {
     setVideoControlRef(controls);
   };
+
+  // Determine if we have content to work with 
+  // For CES: videos uploaded
+  // For Scene Generation: both location AND tile selected
+  const hasContent = uploadedVideos.length > 0 || (hasLocation && hasTile);
 
   return (
     <div className="h-screen flex flex-col overflow-hidden">
@@ -90,7 +116,7 @@ const App: React.FC = () => {
             onSettings={() => console.log("Settings")}
             onHelp={() => console.log("Help")}
             isPlaying={isVideoPlaying}
-            hasVideos={uploadedVideos.length > 0}
+            hasVideos={hasContent}
           />
         </>
       )}
@@ -102,9 +128,11 @@ const App: React.FC = () => {
           onVideoPlayStateChange={handleVideoPlayStateChange}
           onVideoUpload={handleVideoUpload}
           onFiltersChange={handleFiltersChange}
+          onTaskUpdate={handleTaskUpdate}
           onRegisterVideoControls={registerVideoControls}
           isVideoPlaying={isVideoPlaying}
           selectedFilters={selectedFilters}
+          currentTaskName={currentTaskName}
         />
       </div>
     </div>

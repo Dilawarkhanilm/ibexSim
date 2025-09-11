@@ -17,6 +17,7 @@ interface MainLayoutProps {
   onVideoPlayStateChange?: (isPlaying: boolean) => void;
   onVideoUpload?: (videos: VideoFile[]) => void;
   onFiltersChange?: (filters: string[]) => void;
+  onTaskUpdate?: (taskName: string) => void;
   onRegisterVideoControls?: (controls: {
     play: () => void;
     pause: () => void;
@@ -25,6 +26,7 @@ interface MainLayoutProps {
   }) => void;
   isVideoPlaying?: boolean;
   selectedFilters?: string[];
+  currentTaskName?: string;
 }
 
 const MainLayout: React.FC<MainLayoutProps> = ({ 
@@ -34,9 +36,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   onVideoPlayStateChange,
   onVideoUpload,
   onFiltersChange,
+  onTaskUpdate,
   onRegisterVideoControls,
   isVideoPlaying = false,
-  selectedFilters = ['All']
+  selectedFilters = ['All'],
+  currentTaskName = ''
 }) => {
   switch (currentPage) {
     case 'login':
@@ -48,9 +52,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({
           onVideoPlayStateChange={onVideoPlayStateChange}
           onVideoUpload={onVideoUpload}
           onFiltersChange={onFiltersChange}
+          onTaskUpdate={onTaskUpdate}
           onRegisterVideoControls={onRegisterVideoControls}
           isVideoPlaying={isVideoPlaying}
           selectedFilters={selectedFilters}
+          currentTaskName={currentTaskName}
         />
       );
     default:

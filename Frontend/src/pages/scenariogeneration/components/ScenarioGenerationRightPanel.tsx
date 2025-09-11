@@ -26,7 +26,7 @@ const ScenarioGenerationRightPanel: React.FC = () => {
             <div className="flex-1 overflow-y-auto p-3 space-y-4">
                 {/* Select Location Section */}
                 <Card className="bg-zinc-800 border-zinc-700">
-                    <CardHeader className="pb-3">
+                    <CardHeader className="">
                         <CardTitle className="text-sm text-zinc-200">Select Location</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-3">
@@ -53,7 +53,7 @@ const ScenarioGenerationRightPanel: React.FC = () => {
 
                 {/* Upload Traffic Critical Point Section */}
                 <Card className="bg-zinc-800 border-zinc-700">
-                    <CardHeader className="pb-3">
+                    <CardHeader className="">
                         <CardTitle className="text-sm text-zinc-200">Upload Traffic Critical Point</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-3">
@@ -80,7 +80,7 @@ const ScenarioGenerationRightPanel: React.FC = () => {
 
                 {/* Scenario Parameters */}
                 <Card className="bg-zinc-800 border-zinc-700">
-                    <CardHeader className="pb-3">
+                    <CardHeader className="">
                         <CardTitle className="text-sm text-zinc-200">Scenario Parameters</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-3">
@@ -127,7 +127,7 @@ const ScenarioGenerationRightPanel: React.FC = () => {
 
                 {/* Generation Options */}
                 <Card className="bg-zinc-800 border-zinc-700">
-                    <CardHeader className="pb-3">
+                    <CardHeader className="">
                         <CardTitle className="text-sm text-zinc-200">Generation Options</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-3">
