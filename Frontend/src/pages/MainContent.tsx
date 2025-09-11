@@ -6,7 +6,7 @@ import TabContent from '../components/TabContent';
 import ProjectExplorer from '../components/ProjectExplorer';
 import { TabManagerProvider, useTabManager } from '../contexts/TabManagerContext';
 import { Home, Activity, FileText } from 'lucide-react';
-import Dashboard from './Dashboard';
+import Welcome from './Welcome';
 import Profile from './Profile';
 
 interface MainContentProps {
@@ -16,21 +16,24 @@ interface MainContentProps {
 const MainContentInner: React.FC<MainContentProps> = ({ onLogout }) => {
   const { tabList, activeTab, addTab, removeTab, setActiveTab, clearAllTabs } = useTabManager();
   const [showProjectExplorer, setShowProjectExplorer] = React.useState(true);
-  const [currentView, setCurrentView] = React.useState<'dashboard' | 'tabs'>('dashboard');
+  const [currentView, setCurrentView] = React.useState<'Welcome' | 'tabs'>('Welcome');
 
   // Initialize with Dashboard view (no tabs)
   useEffect(() => {
-    setCurrentView('dashboard');
+    setCurrentView('Welcome');
   }, []);
 
   // Handle navigation from sidebar clicks
   const handleNavigateToTab = (tabName: string, component: JSX.Element, icon?: JSX.Element) => {
-    if (tabName === 'Dashboard') {
-      // Switch to dashboard view (no tabs)
-      setCurrentView('dashboard');
+    if (tabName === 'Welcome') {
+      setCurrentView('Welcome');
       clearAllTabs();
+      setShowProjectExplorer(false); // 👈 Explorer off on Welcome
       return;
     }
+
+    setShowProjectExplorer(true); // 👈 Explorer auto-open on Dashboard or any other tab
+
 
     // Switch to tabs view for all other pages
     setCurrentView('tabs');
@@ -102,35 +105,34 @@ const MainContentInner: React.FC<MainContentProps> = ({ onLogout }) => {
     // If we're closing the last tab, switch back to dashboard
     if (tabList.length === 1) {
       setTimeout(() => {
-        setCurrentView('dashboard');
+        setCurrentView('Welcome');
       }, 100);
     }
   };
 
   // Dashboard View - Full screen without tabs or project explorer
-  if (currentView === 'dashboard') {
+  if (currentView === 'Welcome') {
     return (
       <div className="h-full flex flex-col">
         <div className="flex-1 flex overflow-hidden">
-          {/* Sidebar */}
           <Sidebar
             onNavigateToTab={handleNavigateToTab}
             onToggleExplorer={handleToggleExplorer}
-            isExplorerOpen={false} // Force closed for dashboard
-            activeTab="Dashboard"
+            isExplorerOpen={false}
+            activeTab="Welcome"
           />
 
-          {/* Dashboard Content - Full width */}
+          {/* Welcome screen content */}
           <div className="flex-1 overflow-hidden">
-            <Dashboard onNavigateToTab={handleNavigateToTab} />
+            <Welcome onNavigateToTab={handleNavigateToTab} />
           </div>
         </div>
 
-        {/* Status Bar */}
         <StatusBar />
       </div>
     );
   }
+
 
   // Tabs View - Show tabs, project explorer, and tab content
   return (
@@ -141,8 +143,9 @@ const MainContentInner: React.FC<MainContentProps> = ({ onLogout }) => {
           onNavigateToTab={handleNavigateToTab}
           onToggleExplorer={handleToggleExplorer}
           isExplorerOpen={showProjectExplorer}
-          activeTab={activeTab || undefined}
+          activeTab={activeTab ?? undefined}
         />
+
 
         {/* Project Explorer - with smooth transition */}
         <div className={`transition-all duration-300 ease-in-out ${showProjectExplorer ? 'w-60' : 'w-0'} overflow-hidden`}>

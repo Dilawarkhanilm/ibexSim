@@ -1,235 +1,389 @@
-// src/components/Dashboard.tsx
-import React from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import React from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { FileText, FolderOpen, Play, Zap, Settings, Keyboard, FileCode, Clock, Folder, Home } from "lucide-react";
-import CreateNewProjectModal, { type CreateProjectPayload } from "@/components/modals/CreateNewProjectModal";
-import RecentProjectsModal, { type RecentProject } from "@/components/modals/RecentProjectsModal";
-import Welcome from '@/pages/Welcome';
+import {
+  Activity,
+  Zap,
+  GitBranch,
+  Car,
+  FileText,
+  BarChart3,
+  Brain,
+
+  Shield,
+  Gauge,
+  Route,
+  Eye,
+  Workflow,
+  ArrowRight,
+  Sparkles,
+  Layers,
+  Clock
+} from 'lucide-react';
 
 interface DashboardProps {
-    className?: string;
-    onNavigateToTab?: (tabName: string, component: React.JSX.Element, icon?: React.JSX.Element) => void;
+  onNavigateToTab?: (tabName: string, component: React.JSX.Element, icon?: React.JSX.Element) => void;
 }
-type Recent = RecentProject;
 
-const Dashboard: React.FC<DashboardProps> = ({ className, onNavigateToTab }) => {
-    const [openCreate, setOpenCreate] = React.useState(false);
-    const [openRecent, setOpenRecent] = React.useState(false);
+interface FeatureCard {
+  id: string;
+  title: string;
+  description: string;
+  icon: React.ElementType;
+  color: string;
+  bgGradient: string;
+  category: string;
+  status: 'stable' | 'beta' | 'new';
+  onClick?: () => void;
+}
 
-    // Store all projects (not limited)
-    const [allProjects, setAllProjects] = React.useState<Recent[]>(() => {
-        const saved = localStorage.getItem("cortex.allProjects");
-        if (saved) return JSON.parse(saved);
-        return [
-            { name: "Highway_Scenario_Test", path: "C:\\Users\\Developer\\Desktop\\Scenarios.test", lastAccessed: "2 hours ago" },
-            { name: "Urban_Navigation_Sim", path: "C:\\Users\\Developer\\Desktop\\Scenarios.test", lastAccessed: "1 day ago" },
-            { name: "Traffic_Light_Detection", path: "C:\\Users\\Developer\\Projects\\TrafficAI", lastAccessed: "3 days ago" },
-            { name: "Parking_Assistant_AI", path: "C:\\Users\\Developer\\Projects\\ParkingAI", lastAccessed: "5 days ago" },
-            { name: "Lane_Detection_Model", path: "C:\\Users\\Developer\\Projects\\LaneAI", lastAccessed: "1 week ago" },
-            { name: "Collision_Avoidance", path: "C:\\Users\\Developer\\Projects\\CollisionAI", lastAccessed: "2 weeks ago" },
-        ];
-    });
-
-    // Get only the latest 3 projects for dashboard display
-    const recentProjects = React.useMemo(() => allProjects.slice(0, 3), [allProjects]);
-
-    React.useEffect(() => {
-        localStorage.setItem("cortex.allProjects", JSON.stringify(allProjects));
-    }, [allProjects]);
-
-    // keyboard: Ctrl+Shift+N and Ctrl+O
-    React.useEffect(() => {
-        const onKey = (e: KeyboardEvent) => {
-            const isAccel = e.ctrlKey || e.metaKey;
-            if (isAccel && e.shiftKey && e.key.toLowerCase() === "n") {
-                e.preventDefault();
-                setOpenCreate(true);
-                return;
-            }
-            if (isAccel && !e.shiftKey && e.key.toLowerCase() === "o") {
-                e.preventDefault();
-                setOpenRecent(true);
-            }
-        };
-        window.addEventListener("keydown", onKey);
-        return () => window.removeEventListener("keydown", onKey);
-    }, []);
-
-    const handleCreate = (p: CreateProjectPayload) => {
-        // @ts-expect-error provided by preload if wired
-        window.cortex?.createWorkspace?.(p).catch(() => { });
-
-        const newProject: Recent = {
-            name: p.name,
-            path: p.directory || "",
-            lastAccessed: "just now"
-        };
-
-        // Add to all projects and move to top
-        setAllProjects((prev) =>
-            [newProject, ...prev.filter(project => project.path !== newProject.path)]
-        );
-
-        // Navigate to Welcome page after project creation
+const Dashboard: React.FC<DashboardProps> = ({ onNavigateToTab }) => {
+  const navigationFeatures: FeatureCard[] = [
+    {
+      id: 'critical-event-sieve',
+      title: 'Critical Event Sieve',
+      description: 'Advanced event detection and analysis for autonomous vehicle safety scenarios',
+      icon: Activity,
+      color: 'text-red-400',
+      bgGradient: 'from-red-900/20 to-red-800/10',
+      category: 'Analysis',
+      status: 'stable',
+      onClick: () => {
         if (onNavigateToTab) {
-            const WelcomeComponent = <Welcome />;
-
-            setTimeout(() => {
-                onNavigateToTab("Welcome", WelcomeComponent, <Home size={16} />);
-            }, 100);
+          const CriticalEventSieveComponent = (
+            <div className="p-6 text-white bg-zinc-950 h-full">
+              <h2 className="text-xl font-semibold mb-4">Critical Event Sieve</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-zinc-800 p-4 rounded-lg">
+                  <h3 className="font-medium mb-2">Event Detection</h3>
+                  <p className="text-sm text-zinc-400">Real-time critical event monitoring</p>
+                </div>
+                <div className="bg-zinc-800 p-4 rounded-lg">
+                  <h3 className="font-medium mb-2">Safety Analysis</h3>
+                  <p className="text-sm text-zinc-400">Advanced safety scenario analysis</p>
+                </div>
+              </div>
+            </div>
+          );
+          onNavigateToTab("Critical Event Sieve", CriticalEventSieveComponent, <Activity size={16} />);
         }
-    };
-
-    const openProject = (p: Recent) => {
-        // call into Electron or router here
-        // @ts-expect-error optional preload
-        window.cortex?.openWorkspace?.(p).catch(() => { });
-
-        // Move project to top of all projects list
-        setAllProjects((prev) => {
-            const rest = prev.filter((x) => x.path !== p.path);
-            return [{ ...p, lastAccessed: "just now" }, ...rest];
-        });
-        setOpenRecent(false);
-
-        // Navigate to Welcome page after opening project
+      }
+    },
+    {
+      id: 'scene-generation',
+      title: 'Scene Generation',
+      description: 'Create realistic driving scenarios and environments for testing',
+      icon: Zap,
+      color: 'text-yellow-400',
+      bgGradient: 'from-yellow-900/20 to-yellow-800/10',
+      category: 'Generation',
+      status: 'stable',
+      onClick: () => {
         if (onNavigateToTab) {
-            const WelcomeComponent = <Welcome />;
-
-            // Small delay to ensure smooth transition
-            setTimeout(() => {
-                onNavigateToTab("Welcome", WelcomeComponent, <Home size={16} />);
-            }, 100);
+          const SceneGenerationComponent = (
+            <div className="p-6 text-white bg-zinc-950 h-full">
+              <h2 className="text-xl font-semibold mb-4">Scene Generation</h2>
+              <p className="text-zinc-400">Advanced scene generation tools for AV testing</p>
+            </div>
+          );
+          onNavigateToTab("Scene Generation", SceneGenerationComponent, <Zap size={16} />);
         }
-    };
-
-    const removeFromRecent = (path: string) => {
-        setAllProjects((prev) => prev.filter((p) => p.path !== path));
-    };
-
-    const clearAllRecent = () => {
-        setAllProjects([]);
-    };
-
-    const startItems = [
-        { label: "New Project", shortcut: "Ctrl+Shift+N", icon: FileText, onClick: () => setOpenCreate(true) },
-        { label: "Open Project", shortcut: "Ctrl+O", icon: FolderOpen, onClick: () => setOpenRecent(true) },
-        { label: "Open Folder", shortcut: "Ctrl+K", icon: Folder, onClick: () => console.log("Open Folder") },
-    ];
-
-    const testingItems = [
-        { label: "New Simulation", shortcut: "Ctrl+Shift+S", icon: Play, onClick: () => console.log("New Simulation") },
-        { label: "Quick Test", shortcut: "Ctrl+T", icon: Zap, onClick: () => console.log("Quick Test") },
-        { label: "Scenario Builder", shortcut: "Ctrl+Shift+B", icon: FileCode, onClick: () => console.log("Scenario Builder") },
-        { label: "Batch Processing", shortcut: "Shift+Ctrl+P", icon: Settings, onClick: () => console.log("Batch Processing") },
-    ];
-
-    const toolItems = [
-        { label: "Settings", shortcut: "Ctrl+,", icon: Settings, onClick: () => console.log("Settings") },
-        { label: "Keyboard Shortcuts", shortcut: "Ctrl+K", icon: Keyboard, onClick: () => console.log("Keyboard Shortcuts") },
-    ];
-
-    const renderActionCard = (title: string, items: any[]) => (
-        <Card className="bg-zinc-900 border-zinc-800">
-            <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium text-zinc-200">{title}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-                {items.map((item: any, index: number) => (
-                    <Button
-                        key={index}
-                        variant="ghost"
-                        className="w-full justify-between h-8 px-3 text-xs text-zinc-400 hover:text-white hover:bg-zinc-800"
-                        onClick={item.onClick}
-                    >
-                        <div className="flex items-center gap-2">
-                            <item.icon size={12} />
-                            <span>{item.label}</span>
-                        </div>
-                        {item.shortcut && (
-                            <Badge variant="secondary" className="h-5 px-2 text-[10px] bg-zinc-800 text-zinc-500 border-zinc-700">
-                                {item.shortcut}
-                            </Badge>
-                        )}
-                    </Button>
-                ))}
-            </CardContent>
-        </Card>
-    );
-
-    return (
-        <div className={cn("p-4 bg-zinc-950 text-white h-full overflow-auto", className)}>
-            {/* Header */}
-            <div className="text-center py-6 mb-3">
-                <h1 className="text-xl font-light text-white mb-1">ibeXcortex Dashboard</h1>
-                <p className="text-zinc-500 text-xs">Autonomous Vehicle Testing & Simulation Platform v1.0.4.5</p>
+      }
+    },
+    {
+      id: 'scenario-generation',
+      title: 'Scenario Generation',
+      description: 'Build comprehensive test scenarios with branching logic and conditions',
+      icon: GitBranch,
+      color: 'text-blue-400',
+      bgGradient: 'from-blue-900/20 to-blue-800/10',
+      category: 'Generation',
+      status: 'beta',
+      onClick: () => {
+        if (onNavigateToTab) {
+          const ScenarioGenerationComponent = (
+            <div className="p-6 text-white bg-zinc-950 h-full">
+              <h2 className="text-xl font-semibold mb-4">Scenario Generation</h2>
+              <p className="text-zinc-400">Comprehensive scenario building tools</p>
             </div>
-
-            {/* Action cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                {renderActionCard("Start", startItems)}
-                {renderActionCard("Testing", testingItems)}
-                {renderActionCard("Tools", toolItems)}
+          );
+          onNavigateToTab("Scenario Generation", ScenarioGenerationComponent, <GitBranch size={16} />);
+        }
+      }
+    },
+    {
+      id: 'drive-lab',
+      title: 'Drive Lab',
+      description: 'Interactive driving simulation and testing environment',
+      icon: Car,
+      color: 'text-green-400',
+      bgGradient: 'from-green-900/20 to-green-800/10',
+      category: 'Simulation',
+      status: 'stable',
+      onClick: () => {
+        if (onNavigateToTab) {
+          const DriveLabComponent = (
+            <div className="p-6 text-white bg-zinc-950 h-full">
+              <h2 className="text-xl font-semibold mb-4">Drive Lab</h2>
+              <p className="text-zinc-400">Interactive driving simulation environment</p>
             </div>
+          );
+          onNavigateToTab("Drive Lab", DriveLabComponent, <Car size={16} />);
+        }
+      }
+    },
+    {
+      id: 'file-viewer',
+      title: 'File Viewer',
+      description: 'Advanced file management and visualization for test data',
+      icon: FileText,
+      color: 'text-purple-400',
+      bgGradient: 'from-purple-900/20 to-purple-800/10',
+      category: 'Tools',
+      status: 'stable',
+      onClick: () => {
+        if (onNavigateToTab) {
+          const FileViewerComponent = (
+            <div className="p-6 text-white bg-zinc-950 h-full">
+              <h2 className="text-xl font-semibold mb-4">File Viewer</h2>
+              <p className="text-zinc-400">Advanced file management and visualization</p>
+            </div>
+          );
+          onNavigateToTab("File Viewer", FileViewerComponent, <FileText size={16} />);
+        }
+      }
+    }
+  ];
 
-            {/* Recent card - showing only latest 3 projects */}
-            <Card className="bg-zinc-900 border-zinc-800">
-                <CardHeader className="pb-3 flex flex-row items-center justify-between">
-                    <CardTitle className="text-sm font-medium text-zinc-200 flex items-center gap-2">
-                        <Clock size={14} />
-                        Recent Projects
-                    </CardTitle>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-7 px-2 text-[11px] text-zinc-400 hover:text-white hover:bg-zinc-800"
-                        onClick={() => setOpenRecent(true)}
-                    >
-                        View all
-                    </Button>
-                </CardHeader>
-                <CardContent className="space-y-1">
-                    {recentProjects.length === 0 && (
-                        <div className="text-center py-8">
-                            <p className="text-zinc-500 text-xs">No recent projects</p>
-                        </div>
-                    )}
-                    {recentProjects.map((project, index) => (
-                        <Button
-                            key={index}
-                            variant="ghost"
-                            className="w-full justify-start h-12 px-3 text-xs text-zinc-400 hover:text-white hover:bg-zinc-800"
-                            onClick={() => openProject(project)}
-                        >
-                            <div className="flex items-center gap-3 w-full">
-                                <div className="w-3 h-3 bg-amber-500 rounded-sm flex-shrink-0" />
-                                <div className="flex-1 text-left min-w-0">
-                                    <div className="font-medium text-xs truncate text-zinc-300">{project.name}</div>
-                                </div>
-                                <div className="text-[10px] text-zinc-600 flex-shrink-0">{project.lastAccessed}</div>
-                            </div>
-                        </Button>
-                    ))}
-                </CardContent>
-            </Card>
+  const additionalFeatures: FeatureCard[] = [
+    {
+      id: 'ai-analysis',
+      title: 'AI Analysis',
+      description: 'Machine learning powered vehicle behavior analysis',
+      icon: Brain,
+      color: 'text-pink-400',
+      bgGradient: 'from-pink-900/20 to-pink-800/10',
+      category: 'AI/ML',
+      status: 'beta'
+    },
+    {
+      id: 'performance-metrics',
+      title: 'Performance Metrics',
+      description: 'Real-time performance monitoring and analytics dashboard',
+      icon: BarChart3,
+      color: 'text-cyan-400',
+      bgGradient: 'from-cyan-900/20 to-cyan-800/10',
+      category: 'Analytics',
+      status: 'stable'
+    },
+    {
+      id: 'route-planning',
+      title: 'Route Planning',
+      description: 'Advanced path planning and navigation algorithms',
+      icon: Route,
+      color: 'text-emerald-400',
+      bgGradient: 'from-emerald-900/20 to-emerald-800/10',
+      category: 'Navigation',
+      status: 'new'
+    },
+    {
+      id: 'sensor-fusion',
+      title: 'Sensor Fusion',
+      description: 'Multi-sensor data integration and processing pipeline',
+      icon: Layers,
+      color: 'text-orange-400',
+      bgGradient: 'from-orange-900/20 to-orange-800/10',
+      category: 'Processing',
+      status: 'beta'
+    },
+    {
+      id: 'computer-vision',
+      title: 'Computer Vision',
+      description: 'Object detection, tracking, and scene understanding',
+      icon: Eye,
+      color: 'text-indigo-400',
+      bgGradient: 'from-indigo-900/20 to-indigo-800/10',
+      category: 'Vision',
+      status: 'stable'
+    },
+    {
+      id: 'safety-validation',
+      title: 'Safety Validation',
+      description: 'Comprehensive safety assessment and validation tools',
+      icon: Shield,
+      color: 'text-red-400',
+      bgGradient: 'from-red-900/20 to-red-800/10',
+      category: 'Safety',
+      status: 'stable'
+    },
+    {
+      id: 'data-pipeline',
+      title: 'Data Pipeline',
+      description: 'Automated data processing and management workflows',
+      icon: Workflow,
+      color: 'text-violet-400',
+      bgGradient: 'from-violet-900/20 to-violet-800/10',
+      category: 'Data',
+      status: 'beta'
+    },
+    {
+      id: 'real-time-monitoring',
+      title: 'Real-time Monitoring',
+      description: 'Live system monitoring and alert management',
+      icon: Gauge,
+      color: 'text-teal-400',
+      bgGradient: 'from-teal-900/20 to-teal-800/10',
+      category: 'Monitoring',
+      status: 'stable'
+    }
+  ];
 
-            {/* Modals */}
-            <CreateNewProjectModal open={openCreate} onOpenChange={setOpenCreate} onCreate={handleCreate} />
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'stable':
+        return 'bg-green-900/30 text-green-400 border-green-700';
+      case 'beta':
+        return 'bg-yellow-900/30 text-yellow-400 border-yellow-700';
+      case 'new':
+        return 'bg-blue-900/30 text-blue-400 border-blue-700';
+      default:
+        return 'bg-zinc-800 text-zinc-400 border-zinc-700';
+    }
+  };
 
-            {/* Pass all projects to the modal */}
-            <RecentProjectsModal
-                open={openRecent}
-                onOpenChange={setOpenRecent}
-                projects={allProjects}
-                onOpenProject={openProject}
-                onRemoveProject={removeFromRecent}
-                onClearAll={clearAllRecent}
-            />
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'new':
+        return <Sparkles size={12} />;
+      case 'beta':
+        return <Clock size={12} />;
+      default:
+        return null;
+    }
+  };
+
+  const renderFeatureCard = (feature: FeatureCard, index: number) => (
+    <Card
+      key={feature.id}
+      className={cn(
+        "bg-gradient-to-br",
+        feature.bgGradient,
+        "border-zinc-800 hover:border-zinc-700 transition-all duration-300 hover:scale-[1.02] cursor-pointer group",
+        feature.onClick && "hover:shadow-lg"
+      )}
+      onClick={feature.onClick}
+    >
+      <CardHeader className="pb-3">
+        <div className="flex items-start justify-between">
+          <div className={cn("p-2 rounded-lg bg-zinc-900/50", feature.color)}>
+            <feature.icon size={20} />
+          </div>
+          <div className="flex items-center gap-2">
+            <Badge
+              variant="outline"
+              className={cn("text-xs px-2 py-0.5", getStatusColor(feature.status))}
+            >
+              <div className="flex items-center gap-1">
+                {getStatusIcon(feature.status)}
+                {feature.status}
+              </div>
+            </Badge>
+          </div>
         </div>
-    );
+        <div>
+          <CardTitle className="text-base text-white group-hover:text-zinc-100 transition-colors">
+            {feature.title}
+          </CardTitle>
+          <div className="flex items-center gap-2 mt-1">
+            <Badge variant="secondary" className="text-xs bg-zinc-800 text-zinc-400 border-zinc-700">
+              {feature.category}
+            </Badge>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <CardDescription className="text-zinc-400 text-sm leading-relaxed">
+          {feature.description}
+        </CardDescription>
+        {feature.onClick && (
+          <div className="flex items-center justify-between mt-4">
+            <span className="text-xs text-zinc-500">Click to explore</span>
+            <ArrowRight size={14} className="text-zinc-600 group-hover:text-zinc-400 transition-colors" />
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+
+  return (
+    <div className="p-6 bg-zinc-950 text-white h-full overflow-auto">
+      {/* Header */}
+      <div className="mb-8">
+        <div className="flex items-center gap-3 mb-2">
+          <div className="p-2 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg">
+            <Sparkles size={24} />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+              Welcome to ibeXcortex
+            </h1>
+            <p className="text-sm text-zinc-400">Autonomous Vehicle Testing & Simulation Platform</p>
+          </div>
+        </div>
+        <p className="text-zinc-300 text-sm leading-relaxed max-w-2xl">
+          Explore our comprehensive suite of tools designed for autonomous vehicle development, testing, and validation.
+          Each feature is crafted to provide insights and capabilities essential for safe autonomous driving systems.
+        </p>
+      </div>
+
+      {/* Main Navigation Features */}
+      <div className="mb-8">
+        <div className="flex items-center gap-2 mb-4">
+          <h2 className="text-lg font-semibold text-white">Core Features</h2>
+          <Badge className="bg-blue-900/30 text-blue-400 border-blue-700">
+            Interactive
+          </Badge>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {navigationFeatures.map((feature, index) => renderFeatureCard(feature, index))}
+        </div>
+      </div>
+
+      {/* Additional Features */}
+      <div className="mb-6">
+        <div className="flex items-center gap-2 mb-4">
+          <h2 className="text-lg font-semibold text-white">Advanced Capabilities</h2>
+          <Badge variant="secondary" className="bg-zinc-800 text-zinc-400 border-zinc-700">
+            Coming Soon
+          </Badge>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {additionalFeatures.map((feature, index) => renderFeatureCard(feature, index))}
+        </div>
+      </div>
+
+      {/* Quick Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
+        <div className="bg-zinc-900/50 p-4 rounded-lg border border-zinc-800">
+          <div className="text-2xl font-bold text-white mb-1">13</div>
+          <div className="text-xs text-zinc-400">Total Features</div>
+        </div>
+        <div className="bg-zinc-900/50 p-4 rounded-lg border border-zinc-800">
+          <div className="text-2xl font-bold text-green-400 mb-1">8</div>
+          <div className="text-xs text-zinc-400">Stable Features</div>
+        </div>
+        <div className="bg-zinc-900/50 p-4 rounded-lg border border-zinc-800">
+          <div className="text-2xl font-bold text-yellow-400 mb-1">4</div>
+          <div className="text-xs text-zinc-400">Beta Features</div>
+        </div>
+        <div className="bg-zinc-900/50 p-4 rounded-lg border border-zinc-800">
+          <div className="text-2xl font-bold text-blue-400 mb-1">1</div>
+          <div className="text-xs text-zinc-400">New Features</div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default Dashboard;
