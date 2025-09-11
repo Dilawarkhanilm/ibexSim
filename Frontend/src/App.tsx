@@ -12,10 +12,8 @@ const App: React.FC = () => {
 
   return (
     <div className="h-screen flex flex-col overflow-hidden">
-      {/* Always show TitleBar */}
       <CustomTitleBar />
 
-      {/* Only show MenuBar & ToolBar if NOT on login page */}
       {currentPage === 'main' && (
         <>
           <MenuBar />
@@ -31,8 +29,6 @@ const App: React.FC = () => {
           />
         </>
       )}
-
-      {/* Main Application Content */}
       <div className="flex-1 overflow-hidden">
         <MainLayout
           currentPage={currentPage}

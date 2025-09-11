@@ -41,11 +41,11 @@ const CESLeftPanel: React.FC = () => {
                                     <SelectItem value="all-videos" className='text-xs'>All Videos</SelectItem>
                                 </SelectContent>
                             </Select>
-                            <Button size="sm" className="h-9 px-2 text-xs bg-zinc-700 hover:bg-zinc-600">
+                            <Button size="sm" className="h-9 px-2 text-xs bg-zinc-700 hover:bg-zinc-600 cursor-pointer">
                                 <BarChart3 className="w-3 h-3 mr-1" />
                                 KPI
                             </Button>
-                            <Button size="sm" className="h-9 px-2 text-xs bg-zinc-700 hover:bg-zinc-600">
+                            <Button size="sm" className="h-9 px-2 text-xs bg-zinc-700 hover:bg-zinc-600 cursor-pointer">
                                 <Download className="w-3 h-3 mr-1" />
                                 Export
                             </Button>
