@@ -44,7 +44,11 @@ const SceneGenerationLeftPanel: React.FC<SceneGenerationLeftPanelProps> = ({
     const leafletMapRef = useRef<any>(null);
     const gridLayerRef = useRef<any>(null);
     const [isMapLoaded, setIsMapLoaded] = useState(false);
-    const [gridSize] = useState(5); // 5x5 grid
+    const [tileWidthKm] = useState(2); // 2km tile width (matching backend)
+    const [tileHeightKm] = useState(2); // 2km tile height (matching backend)
+    const TILE_WIDTH_KM = 2;
+const TILE_HEIGHT_KM = 2;
+const KM_TO_DEG = 1 / 111;
     const [hoveredTile, setHoveredTile] = useState<string | null>(null);
 
     // Load Leaflet dynamically
@@ -101,7 +105,7 @@ const SceneGenerationLeftPanel: React.FC<SceneGenerationLeftPanelProps> = ({
                 .openPopup();
 
             leafletMapRef.current = map;
-            
+
             // Add grid overlay
             setTimeout(() => {
                 addGridOverlay();
@@ -117,161 +121,107 @@ const SceneGenerationLeftPanel: React.FC<SceneGenerationLeftPanelProps> = ({
         };
     }, [isMapLoaded, selectedLocation]);
 
-    // Add grid overlay to the map
     const addGridOverlay = () => {
         if (!leafletMapRef.current || !selectedLocation) return;
-
         const map = leafletMapRef.current;
-        
-        // Remove existing grid layer
+      
         if (gridLayerRef.current) {
-            map.removeLayer(gridLayerRef.current);
+          map.removeLayer(gridLayerRef.current);
         }
-
-        // Remove existing grid info controls
-        map.eachLayer((layer: any) => {
-            if (layer.options && layer.options.className === 'grid-info-control') {
-                map.removeLayer(layer);
-            }
-        });
-
-        // Create grid layer group
+      
         const gridLayer = window.L.layerGroup();
-        
-        // Get current map bounds to make grid cover the visible area
-        const mapBounds = map.getBounds();
-        const center = map.getCenter();
-        
-        // Calculate grid bounds based on current view (make it larger than visible area)
-        const latRange = mapBounds.getNorth() - mapBounds.getSouth();
-        const lonRange = mapBounds.getEast() - mapBounds.getWest();
-        
-        const bounds = {
-            north: center.lat + (latRange * 0.6),
-            south: center.lat - (latRange * 0.6),
-            east: center.lng + (lonRange * 0.6),
-            west: center.lng - (lonRange * 0.6)
-        };
-
-        const latStep = (bounds.north - bounds.south) / gridSize;
-        const lonStep = (bounds.east - bounds.west) / gridSize;
-
-        // Create grid rectangles
-        for (let y = 0; y < gridSize; y++) {
-            for (let x = 0; x < gridSize; x++) {
-                const tileBounds = {
-                    north: bounds.south + (y + 1) * latStep,
-                    south: bounds.south + y * latStep,
-                    east: bounds.west + (x + 1) * lonStep,
-                    west: bounds.west + x * lonStep
+      
+        // Fixed bounding box around city (instead of map.getBounds)
+        // Example: Islamabad (replace with your backend-provided bounds)
+        const minLat = 33.4;
+        const maxLat = 33.9;
+        const minLng = 72.8;
+        const maxLng = 73.3;
+      
+        const KM_TO_DEG = 1 / 111;
+        const tileWidthDeg = TILE_WIDTH_KM * KM_TO_DEG;
+        const tileHeightDeg = TILE_HEIGHT_KM * KM_TO_DEG;
+      
+        let tileNumber = 1;
+      
+        for (let x = minLng; x < maxLng; x += tileWidthDeg) {
+            for (let y = minLat; y < maxLat; y += tileHeightDeg) {
+              const tileBounds = {
+                north: y + tileHeightDeg,
+                south: y,
+                east: x + tileWidthDeg,
+                west: x,
+              };
+          
+              const rect = window.L.rectangle(
+                [
+                  [tileBounds.south, tileBounds.west],
+                  [tileBounds.north, tileBounds.east],
+                ],
+                {
+                  color: "green",
+                  weight: 1,
+                  fillOpacity: 0,
+                }
+              );
+          
+              // 👉 Add click handler
+              rect.on("click", () => {
+                if (isGenerating) return;
+          
+                const tileInfo: TileInfo = {
+                  id: `tile_${tileNumber}`,
+                  x: tileNumber - 1,
+                  y: 0, // y-index agar chahiye to add kar sakte ho
+                  bounds: tileBounds,
                 };
-
-                // Create rectangle
-                const rectangle = window.L.rectangle([
-                    [tileBounds.south, tileBounds.west],
-                    [tileBounds.north, tileBounds.east]
-                ], {
-                    color: '#3b82f6',
-                    weight: 2,
-                    opacity: 0.8,
-                    fillColor: selectedTile?.x === x && selectedTile?.y === y ? '#3b82f6' : 'transparent',
-                    fillOpacity: selectedTile?.x === x && selectedTile?.y === y ? 0.3 : 0.1
-                });
-
-                // Add click handler
-                rectangle.on('click', () => {
-                    if (isGenerating) return;
-                    
-                    const tileInfo: TileInfo = {
-                        id: `tile_${x}_${y}`,
-                        x,
-                        y,
-                        bounds: tileBounds
-                    };
-                    
-                    onTileSelect?.(tileInfo);
-                    
-                    // Update grid colors
-                    addGridOverlay();
-                });
-
-                // Add hover effects
-                rectangle.on('mouseover', () => {
-                    if (!isGenerating) {
-                        rectangle.setStyle({
-                            fillColor: '#60a5fa',
-                            fillOpacity: 0.2
-                        });
-                        setHoveredTile(`tile_${x}_${y}`);
-                    }
-                });
-
-                rectangle.on('mouseout', () => {
-                    if (!isGenerating) {
-                        rectangle.setStyle({
-                            fillColor: selectedTile?.x === x && selectedTile?.y === y ? '#3b82f6' : 'transparent',
-                            fillOpacity: selectedTile?.x === x && selectedTile?.y === y ? 0.3 : 0.1
-                        });
-                        setHoveredTile(null);
-                    }
-                });
-
-                // Add label
-                const center = rectangle.getBounds().getCenter();
-                const label = window.L.marker(center, {
-                    icon: window.L.divIcon({
-                        className: 'grid-label',
-                        html: `<div style="
-                            background: rgba(255,255,255,0.9); 
-                            padding: 2px 6px; 
-                            border-radius: 4px; 
-                            font-size: 11px; 
-                            font-weight: bold; 
-                            color: #1f2937;
-                            border: 1px solid #3b82f6;
-                            text-align: center;
-                            min-width: 20px;
-                        ">${x},${y}</div>`,
-                        iconSize: [30, 20],
-                        iconAnchor: [15, 10]
-                    })
-                });
-
-                gridLayer.addLayer(rectangle);
-                gridLayer.addLayer(label);
+          
+                onTileSelect?.(tileInfo); // 🔑 Notify parent (SceneGeneration)
+                onTaskUpdate?.(`Tile selected: (${tileInfo.x}, ${tileInfo.y})`);
+          
+                // Zoom into tile
+                map.fitBounds([
+                  [tileBounds.south, tileBounds.west],
+                  [tileBounds.north, tileBounds.east],
+                ]);
+              });
+          
+              // 👉 Hover effect
+              rect.on("mouseover", () => {
+                rect.setStyle({ color: "blue", weight: 2, fillOpacity: 0.3 });
+              });
+              rect.on("mouseout", () => {
+                rect.setStyle({ color: "green", weight: 1, fillOpacity: 0 });
+              });
+          
+              const centerLat = y + tileHeightDeg / 2;
+              const centerLng = x + tileWidthDeg / 2;
+          
+              const label = window.L.marker([centerLat, centerLng], {
+                icon: window.L.divIcon({
+                  className: "tile-label",
+                  html: `<div style="font-size:12px; font-weight:bold; color:red; text-shadow:1px 1px 2px white;">${tileNumber}</div>`,
+                }),
+              });
+          
+              gridLayer.addLayer(rect);
+              gridLayer.addLayer(label);
+              tileNumber++;
             }
-        }
-
+          }
+          
+      
         gridLayer.addTo(map);
         gridLayerRef.current = gridLayer;
-
-        // Add single grid info control
-        const gridInfo = window.L.control({ position: 'topleft' });
-        gridInfo.onAdd = function() {
-            const div = window.L.DomUtil.create('div', 'grid-info-control');
-            div.innerHTML = `
-                <div style="
-                    background: rgba(0,0,0,0.7); 
-                    color: white; 
-                    padding: 8px; 
-                    border-radius: 4px; 
-                    font-size: 12px;
-                    border: 1px solid #3b82f6;
-                ">
-                    ${gridSize}x${gridSize} Grid • Click to select tile
-                    ${selectedTile ? `<br>Selected: (${selectedTile.x}, ${selectedTile.y})` : ''}
-                </div>
-            `;
-            return div;
-        };
-        gridInfo.addTo(map);
-    };
+      };
+      
+      
 
     // Update map when selected location changes
     useEffect(() => {
         if (leafletMapRef.current && selectedLocation) {
             leafletMapRef.current.setView([selectedLocation.lat, selectedLocation.lon], 15);
-            
+
             // Remove existing markers and add new one
             leafletMapRef.current.eachLayer((layer: any) => {
                 if (layer instanceof window.L.Marker) {
@@ -295,7 +245,7 @@ const SceneGenerationLeftPanel: React.FC<SceneGenerationLeftPanelProps> = ({
                 <CardHeader className="pb-3">
                     <CardTitle className="text-sm text-zinc-200 flex items-center space-x-2">
                         <Grid3X3 size={16} />
-                        <span>Search Location in Map</span>
+                        <span>2km x 2km Grid Tiles</span>
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -309,12 +259,12 @@ const SceneGenerationLeftPanel: React.FC<SceneGenerationLeftPanelProps> = ({
                         </div>
                     ) : (
                         <div className="relative">
-                            <div 
+                            <div
                                 ref={mapRef}
-                                className="w-full bg-zinc-800 border border-zinc-600 rounded-lg overflow-hidden" 
+                                className="w-full bg-zinc-800 border border-zinc-600 rounded-lg overflow-hidden"
                                 style={{ height: isGenerating ? '250px' : '500px' }}
                             />
-                            
+
                             {!isMapLoaded && (
                                 <div className="absolute inset-0 bg-zinc-800 border border-zinc-600 rounded-lg flex items-center justify-center">
                                     <div className="text-center text-zinc-400">
@@ -339,7 +289,7 @@ const SceneGenerationLeftPanel: React.FC<SceneGenerationLeftPanelProps> = ({
                     </CardHeader>
                     <CardContent>
                         <div className="bg-zinc-800 border border-zinc-600 rounded-lg h-96 flex items-center justify-center relative overflow-hidden">
-                            <img 
+                            <img
                                 src="https://cdnb.artstation.com/p/assets/images/images/030/857/589/large/marcos-delgado-marcos-delgado-environment-03.jpg?1601887832"
                                 alt="3D Scene Preview"
                                 className="w-full h-full object-cover"
