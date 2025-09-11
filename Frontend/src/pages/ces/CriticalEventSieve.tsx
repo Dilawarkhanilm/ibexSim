@@ -8,18 +8,83 @@ import {
 import CESLeftPanel from './components/CESLeftPanel';
 import CESRightPanel from './components/CESRightPanel';
 
-const CriticalEventSieve: React.FC = () => {
+interface VideoFile {
+    id: string;
+    file: File;
+    name: string;
+    size: number;
+    duration?: number;
+}
+
+interface CriticalEventSieveProps {
+    onVideoPlayStateChange?: (isPlaying: boolean) => void;
+    onVideoUpload?: (videos: VideoFile[]) => void;
+    onFiltersChange?: (filters: string[]) => void;
+    onRegisterVideoControls?: (controls: {
+        play: () => void;
+        pause: () => void;
+        stop: () => void;
+        restart: () => void;
+    }) => void;
+}
+
+const CriticalEventSieve: React.FC<CriticalEventSieveProps> = ({ 
+    onVideoPlayStateChange,
+    onVideoUpload,
+    onFiltersChange,
+    onRegisterVideoControls
+}) => {
     const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(true);
+    const [uploadedVideos, setUploadedVideos] = useState<VideoFile[]>([]);
+    const [selectedVideoIds, setSelectedVideoIds] = useState<string[]>([]);
+    const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+    const [selectedFilters, setSelectedFilters] = useState<string[]>(['All']);
 
     const toggleRightSidebar = () => {
         setIsRightSidebarOpen(!isRightSidebarOpen);
+    };
+
+    const handleVideosChange = (videos: VideoFile[]) => {
+        setUploadedVideos(videos);
+        onVideoUpload?.(videos);
+        
+        // If all videos are removed, clear selection
+        if (videos.length === 0) {
+            setSelectedVideoIds([]);
+        } else {
+            // Remove selected IDs that no longer exist
+            const validIds = videos.map(v => v.id);
+            setSelectedVideoIds(prev => prev.filter(id => validIds.includes(id)));
+        }
+    };
+
+    const handleFiltersChange = (filters: string[]) => {
+        setSelectedFilters(filters);
+        onFiltersChange?.(filters); // Notify parent component
+    };
+
+    const handleSelectedVideosChange = (selectedIds: string[]) => {
+        setSelectedVideoIds(selectedIds);
+    };
+
+    const handlePlayStateChange = (isPlaying: boolean) => {
+        setIsVideoPlaying(isPlaying);
+        onVideoPlayStateChange?.(isPlaying);
     };
 
     return (
         <div className="h-full bg-zinc-950 text-white flex relative">
             {/* Left Panel - Main Content */}
             <div className="flex-1 flex flex-col min-w-0">
-                <CESLeftPanel />
+                <CESLeftPanel 
+                    videos={uploadedVideos}
+                    selectedVideoIds={selectedVideoIds}
+                    onSelectedVideosChange={handleSelectedVideosChange}
+                    isPlaying={isVideoPlaying}
+                    onPlayStateChange={handlePlayStateChange}
+                    onRegisterVideoControls={onRegisterVideoControls}
+                    selectedFilters={selectedFilters}
+                />
             </div>
 
             {/* Toggle Button */}
@@ -52,7 +117,11 @@ const CriticalEventSieve: React.FC = () => {
                 isRightSidebarOpen ? 'w-80 opacity-100' : 'w-0 opacity-0',
                 "overflow-hidden"
             )}>
-                <CESRightPanel />
+                <CESRightPanel 
+                    onVideosChange={handleVideosChange}
+                    onFiltersChange={handleFiltersChange}
+                    isPlaybackActive={isVideoPlaying}
+                />
             </div>
         </div>
     );

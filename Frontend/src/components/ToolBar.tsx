@@ -15,6 +15,7 @@ import {
     Undo,
     Redo,
     Play,
+    Pause,
     Square,
     RotateCcw,
     Settings,
@@ -32,7 +33,8 @@ interface ToolBarProps {
     onSave?: () => void;
     onUndo?: () => void;
     onRedo?: () => void;
-    onRun?: () => void;
+    onPlay?: () => void;
+    onPause?: () => void;
     onStop?: () => void;
     onRestart?: () => void;
     onCut?: () => void;
@@ -41,6 +43,8 @@ interface ToolBarProps {
     onSearch?: () => void;
     onSettings?: () => void;
     onHelp?: () => void;
+    isPlaying?: boolean;
+    hasVideos?: boolean;
 }
 
 const ToolBar: React.FC<ToolBarProps> = ({
@@ -50,7 +54,8 @@ const ToolBar: React.FC<ToolBarProps> = ({
     onSave,
     onUndo,
     onRedo,
-    onRun,
+    onPlay,
+    onPause,
     onStop,
     onRestart,
     onCut,
@@ -58,7 +63,9 @@ const ToolBar: React.FC<ToolBarProps> = ({
     onPaste,
     onSearch,
     onSettings,
-    onHelp
+    onHelp,
+    isPlaying = false,
+    hasVideos = false
 }) => {
     const toolbarItems = [
         // File operations group
@@ -124,26 +131,29 @@ const ToolBar: React.FC<ToolBarProps> = ({
                 }
             ]
         },
-        // Run operations group
+        // Video playback operations group
         {
             items: [
                 {
-                    icon: Play,
-                    tooltip: 'Start Debugging (F5)',
-                    onClick: onRun,
-                    variant: 'success' as const
+                    icon: isPlaying ? Pause : Play,
+                    tooltip: isPlaying ? 'Pause Video (Space)' : 'Play Video (Space)',
+                    onClick: isPlaying ? onPause : onPlay,
+                    variant: 'success' as const,
+                    disabled: !hasVideos
                 },
                 {
                     icon: Square,
-                    tooltip: 'Stop (Shift+F5)',
+                    tooltip: 'Stop Video (Shift+F5)',
                     onClick: onStop,
-                    variant: 'destructive' as const
+                    variant: 'destructive' as const,
+                    disabled: !hasVideos
                 },
                 {
                     icon: RotateCcw,
-                    tooltip: 'Restart (Ctrl+Shift+F5)',
+                    tooltip: 'Restart Video (Ctrl+Shift+F5)',
                     onClick: onRestart,
-                    variant: 'default' as const
+                    variant: 'default' as const,
+                    disabled: !hasVideos
                 }
             ]
         },
@@ -183,7 +193,11 @@ const ToolBar: React.FC<ToolBarProps> = ({
         }
     };
 
-    const getButtonClassName = (variant: string) => {
+    const getButtonClassName = (variant: string, disabled?: boolean) => {
+        if (disabled) {
+            return 'text-zinc-600 cursor-not-allowed';
+        }
+        
         switch (variant) {
             case 'success':
                 return 'text-green-400 hover:text-green-300 hover:bg-zinc-800';
@@ -208,6 +222,7 @@ const ToolBar: React.FC<ToolBarProps> = ({
                         <div className="flex items-center gap-0.5">
                             {group.items.map((item, itemIndex) => {
                                 const Icon = item.icon;
+                                const isDisabled = 'disabled' in item ? item.disabled : false;
 
                                 return (
                                     <Tooltip key={itemIndex}>
@@ -217,9 +232,10 @@ const ToolBar: React.FC<ToolBarProps> = ({
                                                 size="sm"
                                                 className={cn(
                                                     "w-7 h-7 p-0",
-                                                    getButtonClassName(item.variant)
+                                                    getButtonClassName(item.variant, isDisabled)
                                                 )}
-                                                onClick={item.onClick}
+                                                onClick={isDisabled ? undefined : item.onClick}
+                                                disabled={isDisabled}
                                             >
                                                 <Icon size={14} />
                                             </Button>
@@ -229,6 +245,7 @@ const ToolBar: React.FC<ToolBarProps> = ({
                                             className="bg-zinc-900 border-zinc-700 text-zinc-200 text-xs"
                                         >
                                             {item.tooltip}
+                                            {isDisabled && !hasVideos && " (No videos uploaded)"}
                                         </TooltipContent>
                                     </Tooltip>
                                 );
