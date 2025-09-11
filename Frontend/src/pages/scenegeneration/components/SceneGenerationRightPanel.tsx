@@ -158,7 +158,7 @@ const SceneGenerationRightPanel: React.FC<SceneGenerationRightPanelProps> = ({
                                 disabled={isGenerating}
                             >
                                 <Upload className="w-3 h-3 mr-1" />
-                                Upload GPX
+                                Upload GFX
                             </Button>
                         </div>
 
