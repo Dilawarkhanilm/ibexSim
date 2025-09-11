@@ -8,12 +8,34 @@ import { TabManagerProvider, useTabManager } from '../contexts/TabManagerContext
 import { Home, Activity, FileText } from 'lucide-react';
 import Welcome from './Welcome';
 import Profile from './Profile';
+import CriticalEventSieve from './ces/CriticalEventSieve';
+
+interface VideoFile {
+  id: string;
+  file: File;
+  name: string;
+  size: number;
+  duration?: number;
+}
 
 interface MainContentProps {
   onLogout: () => void;
+  onVideoPlayStateChange?: (isPlaying: boolean) => void;
+  onVideoUpload?: (videos: VideoFile[]) => void;
+  onRegisterVideoControls?: (controls: {
+    play: () => void;
+    pause: () => void;
+    stop: () => void;
+    restart: () => void;
+  }) => void;
 }
 
-const MainContentInner: React.FC<MainContentProps> = ({ onLogout }) => {
+const MainContentInner: React.FC<MainContentProps> = ({ 
+  onLogout,
+  onVideoPlayStateChange,
+  onVideoUpload,
+  onRegisterVideoControls
+}) => {
   const { tabList, activeTab, addTab, removeTab, setActiveTab, clearAllTabs } = useTabManager();
   const [showProjectExplorer, setShowProjectExplorer] = React.useState(true);
   const [currentView, setCurrentView] = React.useState<'Welcome' | 'tabs'>('Welcome');
@@ -28,12 +50,11 @@ const MainContentInner: React.FC<MainContentProps> = ({ onLogout }) => {
     if (tabName === 'Welcome') {
       setCurrentView('Welcome');
       clearAllTabs();
-      setShowProjectExplorer(false); // 👈 Explorer off on Welcome
+      setShowProjectExplorer(false); // Explorer off on Welcome
       return;
     }
 
-    setShowProjectExplorer(true); // 👈 Explorer auto-open on Dashboard or any other tab
-
+    setShowProjectExplorer(true); // Explorer auto-open on Dashboard or any other tab
 
     // Switch to tabs view for all other pages
     setCurrentView('tabs');
@@ -45,10 +66,19 @@ const MainContentInner: React.FC<MainContentProps> = ({ onLogout }) => {
       // If tab exists, just switch to it
       setActiveTab(tabName);
     } else {
-      // Create component with logout prop if it's Profile
+      // Create component with appropriate props
       let finalComponent = component;
+      
       if (tabName === 'Profile') {
         finalComponent = <Profile onLogout={onLogout} />;
+      } else if (tabName === 'Critical Event Sieve') {
+        finalComponent = (
+          <CriticalEventSieve
+            onVideoPlayStateChange={onVideoPlayStateChange}
+            onVideoUpload={onVideoUpload}
+            onRegisterVideoControls={onRegisterVideoControls}
+          />
+        );
       }
 
       // If tab doesn't exist, create it and switch to it
@@ -72,10 +102,19 @@ const MainContentInner: React.FC<MainContentProps> = ({ onLogout }) => {
     setCurrentView('tabs');
 
     let icon: JSX.Element;
+    let finalContent = content;
 
     switch (fileName) {
       case 'Critical Event Sieve':
         icon = <Activity size={16} />;
+        // Override content with video-enabled component
+        finalContent = (
+          <CriticalEventSieve
+            onVideoPlayStateChange={onVideoPlayStateChange}
+            onVideoUpload={onVideoUpload}
+            onRegisterVideoControls={onRegisterVideoControls}
+          />
+        );
         break;
       default:
         icon = <FileText size={16} />;
@@ -91,7 +130,7 @@ const MainContentInner: React.FC<MainContentProps> = ({ onLogout }) => {
       // If tab doesn't exist, create it and switch to it
       addTab({
         name: fileName,
-        component: content,
+        component: finalContent,
         icon
       });
       setActiveTab(fileName);
@@ -133,7 +172,6 @@ const MainContentInner: React.FC<MainContentProps> = ({ onLogout }) => {
     );
   }
 
-
   // Tabs View - Show tabs, project explorer, and tab content
   return (
     <div className="h-full flex flex-col bg-zinc-950">
@@ -145,7 +183,6 @@ const MainContentInner: React.FC<MainContentProps> = ({ onLogout }) => {
           isExplorerOpen={showProjectExplorer}
           activeTab={activeTab ?? undefined}
         />
-
 
         {/* Project Explorer - with smooth transition */}
         <div className={`transition-all duration-300 ease-in-out ${showProjectExplorer ? 'w-60' : 'w-0'} overflow-hidden`}>
@@ -191,10 +228,20 @@ const MainContentInner: React.FC<MainContentProps> = ({ onLogout }) => {
   );
 };
 
-const MainContent: React.FC<MainContentProps> = ({ onLogout }) => {
+const MainContent: React.FC<MainContentProps> = ({ 
+  onLogout,
+  onVideoPlayStateChange,
+  onVideoUpload,
+  onRegisterVideoControls
+}) => {
   return (
     <TabManagerProvider>
-      <MainContentInner onLogout={onLogout} />
+      <MainContentInner 
+        onLogout={onLogout}
+        onVideoPlayStateChange={onVideoPlayStateChange}
+        onVideoUpload={onVideoUpload}
+        onRegisterVideoControls={onRegisterVideoControls}
+      />
     </TabManagerProvider>
   );
 };

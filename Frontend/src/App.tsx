@@ -4,11 +4,62 @@ import MenuBar from "./components/MenuBar";
 import ToolBar from "./components/ToolBar";
 import MainLayout from "./layouts/MainLayout";
 
+interface VideoFile {
+  id: string;
+  file: File;
+  name: string;
+  size: number;
+  duration?: number;
+}
+
 const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<'login' | 'main'>('login');
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const [uploadedVideos, setUploadedVideos] = useState<VideoFile[]>([]);
+  const [videoControlRef, setVideoControlRef] = useState<{
+    play: () => void;
+    pause: () => void;
+    stop: () => void;
+    restart: () => void;
+  } | null>(null);
 
   const handleLogin = () => setCurrentPage('main');
   const handleLogout = () => setCurrentPage('login');
+
+  const handleVideoPlayStateChange = (isPlaying: boolean) => {
+    setIsVideoPlaying(isPlaying);
+  };
+
+  const handleVideoUpload = (videos: VideoFile[]) => {
+    setUploadedVideos(videos);
+  };
+
+  // Video control handlers for toolbar
+  const handlePlay = () => {
+    videoControlRef?.play();
+  };
+
+  const handlePause = () => {
+    videoControlRef?.pause();
+  };
+
+  const handleStop = () => {
+    videoControlRef?.stop();
+  };
+
+  const handleRestart = () => {
+    videoControlRef?.restart();
+  };
+
+  // Register video control methods (this would be called from CESLeftPanel)
+  const registerVideoControls = (controls: {
+    play: () => void;
+    pause: () => void;
+    stop: () => void;
+    restart: () => void;
+  }) => {
+    setVideoControlRef(controls);
+  };
 
   return (
     <div className="h-screen flex flex-col overflow-hidden">
@@ -23,9 +74,18 @@ const App: React.FC = () => {
             onSave={() => console.log("Save")}
             onUndo={() => console.log("Undo")}
             onRedo={() => console.log("Redo")}
-            onRun={() => console.log("Run")}
-            onStop={() => console.log("Stop")}
-            onRestart={() => console.log("Restart")}
+            onPlay={handlePlay}
+            onPause={handlePause}
+            onStop={handleStop}
+            onRestart={handleRestart}
+            onCut={() => console.log("Cut")}
+            onCopy={() => console.log("Copy")}
+            onPaste={() => console.log("Paste")}
+            onSearch={() => console.log("Search")}
+            onSettings={() => console.log("Settings")}
+            onHelp={() => console.log("Help")}
+            isPlaying={isVideoPlaying}
+            hasVideos={uploadedVideos.length > 0}
           />
         </>
       )}
@@ -34,6 +94,9 @@ const App: React.FC = () => {
           currentPage={currentPage}
           onLogin={handleLogin}
           onLogout={handleLogout}
+          onVideoPlayStateChange={handleVideoPlayStateChange}
+          onVideoUpload={handleVideoUpload}
+          onRegisterVideoControls={registerVideoControls}
         />
       </div>
     </div>
