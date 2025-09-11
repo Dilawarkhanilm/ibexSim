@@ -56,8 +56,10 @@
 /* Apply theme variables to Tailwind v4 */
 @theme {
   /* Font Families */
-  --font-sans: "Poppins", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+  --font-sans: "Poppins", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Consolas,
+    "Liberation Mono", Menlo, monospace;
 
   /* Primary Color Scale */
   --color-primary-50: #eff6ff;
@@ -109,9 +111,9 @@
   --color-chart-5: hsl(var(--chart-5));
 
   /* Spacing & Border Radius */
-  --radius-sm: 0.10rem;
+  --radius-sm: 0.1rem;
   --radius: 0.15rem;
-  --radius-md: 0.20rem;
+  --radius-md: 0.2rem;
   --radius-lg: 0.25rem;
   --radius-xl: 0.35rem;
   --radius-2xl: 0.75rem;
@@ -121,8 +123,10 @@
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
   --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.4), 0 1px 2px -1px rgb(0 0 0 / 0.4);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.4);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.4);
-  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.5), 0 8px 10px -6px rgb(0 0 0 / 0.5);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4),
+    0 4px 6px -4px rgb(0 0 0 / 0.4);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.5),
+    0 8px 10px -6px rgb(0 0 0 / 0.5);
   --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.6);
 
   /* Custom animations */
@@ -156,7 +160,9 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  html, body, #root {
+  html,
+  body,
+  #root {
     height: 100%;
     margin: 0;
     padding: 0;
@@ -194,23 +200,45 @@
 
   /* Define keyframes */
   @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
 
   @keyframes slideUp {
-    from { transform: translateY(10px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
+    from {
+      transform: translateY(10px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
   }
 
   @keyframes slideDown {
-    from { transform: translateY(-10px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
+    from {
+      transform: translateY(-10px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
   }
 
   @keyframes scaleIn {
-    from { transform: scale(0.95); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
+    from {
+      transform: scale(0.95);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
   }
 }
 
@@ -282,7 +310,9 @@
   }
 
   /* Input styling - using zinc colors */
-  .input-base, [data-slot="input"], input {
+  .input-base,
+  [data-slot="input"],
+  input {
     background-color: #27272a !important; /* zinc-800 */
     border: 1px solid #3f3f46 !important; /* zinc-700 */
     color: #ffffff !important; /* white text */
@@ -290,11 +320,15 @@
     transition: all 150ms ease;
   }
 
-  .input-base::placeholder, [data-slot="input"]::placeholder, input::placeholder {
+  .input-base::placeholder,
+  [data-slot="input"]::placeholder,
+  input::placeholder {
     color: #a1a1aa !important; /* zinc-400 */
   }
 
-  .input-base:focus, [data-slot="input"]:focus, input:focus {
+  .input-base:focus,
+  [data-slot="input"]:focus,
+  input:focus {
     outline: none;
     border-color: #3773f8 !important; /* your primary blue */
     box-shadow: 0 0 0 1px #3773f8 !important;
@@ -365,6 +399,16 @@
     transition: all 200ms ease;
   }
 
+  .no-spinner::-webkit-outer-spin-button,
+  .no-spinner::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .no-spinner[type="number"] {
+    -moz-appearance: textfield;
+  }
+
   .dashboard-card:hover {
     box-shadow: var(--shadow-xl);
   }
@@ -426,17 +470,35 @@
   }
 
   /* Status utilities */
-  .text-success { color: hsl(var(--success)); }
-  .text-warning { color: hsl(var(--warning)); }
-  .text-danger { color: hsl(var(--danger)); }
-  
-  .bg-success { background-color: hsl(var(--success)); }
-  .bg-warning { background-color: hsl(var(--warning)); }
-  .bg-danger { background-color: hsl(var(--danger)); }
-  
-  .border-success { border-color: hsl(var(--success)); }
-  .border-warning { border-color: hsl(var(--warning)); }
-  .border-danger { border-color: hsl(var(--danger)); }
+  .text-success {
+    color: hsl(var(--success));
+  }
+  .text-warning {
+    color: hsl(var(--warning));
+  }
+  .text-danger {
+    color: hsl(var(--danger));
+  }
+
+  .bg-success {
+    background-color: hsl(var(--success));
+  }
+  .bg-warning {
+    background-color: hsl(var(--warning));
+  }
+  .bg-danger {
+    background-color: hsl(var(--danger));
+  }
+
+  .border-success {
+    border-color: hsl(var(--success));
+  }
+  .border-warning {
+    border-color: hsl(var(--warning));
+  }
+  .border-danger {
+    border-color: hsl(var(--danger));
+  }
 
   /* Layout utilities */
   .container-dashboard {
@@ -454,7 +516,7 @@
     padding-left: 1rem;
     padding-right: 1rem;
   }
-  
+
   .dashboard-card {
     padding: 1rem;
   }
