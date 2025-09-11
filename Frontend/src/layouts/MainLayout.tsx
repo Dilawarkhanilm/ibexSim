@@ -16,12 +16,15 @@ interface MainLayoutProps {
   onLogout: () => void;
   onVideoPlayStateChange?: (isPlaying: boolean) => void;
   onVideoUpload?: (videos: VideoFile[]) => void;
+  onFiltersChange?: (filters: string[]) => void;
   onRegisterVideoControls?: (controls: {
     play: () => void;
     pause: () => void;
     stop: () => void;
     restart: () => void;
   }) => void;
+  isVideoPlaying?: boolean;
+  selectedFilters?: string[];
 }
 
 const MainLayout: React.FC<MainLayoutProps> = ({ 
@@ -30,7 +33,10 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   onLogout,
   onVideoPlayStateChange,
   onVideoUpload,
-  onRegisterVideoControls
+  onFiltersChange,
+  onRegisterVideoControls,
+  isVideoPlaying = false,
+  selectedFilters = ['All']
 }) => {
   switch (currentPage) {
     case 'login':
@@ -41,7 +47,10 @@ const MainLayout: React.FC<MainLayoutProps> = ({
           onLogout={onLogout}
           onVideoPlayStateChange={onVideoPlayStateChange}
           onVideoUpload={onVideoUpload}
+          onFiltersChange={onFiltersChange}
           onRegisterVideoControls={onRegisterVideoControls}
+          isVideoPlaying={isVideoPlaying}
+          selectedFilters={selectedFilters}
         />
       );
     default:

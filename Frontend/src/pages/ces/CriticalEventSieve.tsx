@@ -19,18 +19,19 @@ interface VideoFile {
 interface CriticalEventSieveProps {
     onVideoPlayStateChange?: (isPlaying: boolean) => void;
     onVideoUpload?: (videos: VideoFile[]) => void;
+    onFiltersChange?: (filters: string[]) => void;
     onRegisterVideoControls?: (controls: {
         play: () => void;
         pause: () => void;
         stop: () => void;
         restart: () => void;
     }) => void;
-    
 }
 
 const CriticalEventSieve: React.FC<CriticalEventSieveProps> = ({ 
     onVideoPlayStateChange,
     onVideoUpload,
+    onFiltersChange,
     onRegisterVideoControls
 }) => {
     const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(true);
@@ -59,6 +60,7 @@ const CriticalEventSieve: React.FC<CriticalEventSieveProps> = ({
 
     const handleFiltersChange = (filters: string[]) => {
         setSelectedFilters(filters);
+        onFiltersChange?.(filters); // Notify parent component
     };
 
     const handleSelectedVideosChange = (selectedIds: string[]) => {

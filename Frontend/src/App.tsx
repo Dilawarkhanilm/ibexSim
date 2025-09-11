@@ -16,6 +16,7 @@ const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<'login' | 'main'>('login');
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [uploadedVideos, setUploadedVideos] = useState<VideoFile[]>([]);
+  const [selectedFilters, setSelectedFilters] = useState<string[]>(['All']);
   const [videoControlRef, setVideoControlRef] = useState<{
     play: () => void;
     pause: () => void;
@@ -32,6 +33,10 @@ const App: React.FC = () => {
 
   const handleVideoUpload = (videos: VideoFile[]) => {
     setUploadedVideos(videos);
+  };
+
+  const handleFiltersChange = (filters: string[]) => {
+    setSelectedFilters(filters);
   };
 
   // Video control handlers for toolbar
@@ -96,7 +101,10 @@ const App: React.FC = () => {
           onLogout={handleLogout}
           onVideoPlayStateChange={handleVideoPlayStateChange}
           onVideoUpload={handleVideoUpload}
+          onFiltersChange={handleFiltersChange}
           onRegisterVideoControls={registerVideoControls}
+          isVideoPlaying={isVideoPlaying}
+          selectedFilters={selectedFilters}
         />
       </div>
     </div>

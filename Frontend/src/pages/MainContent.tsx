@@ -22,19 +22,25 @@ interface MainContentProps {
   onLogout: () => void;
   onVideoPlayStateChange?: (isPlaying: boolean) => void;
   onVideoUpload?: (videos: VideoFile[]) => void;
+  onFiltersChange?: (filters: string[]) => void;
   onRegisterVideoControls?: (controls: {
     play: () => void;
     pause: () => void;
     stop: () => void;
     restart: () => void;
   }) => void;
+  isVideoPlaying?: boolean;
+  selectedFilters?: string[];
 }
 
 const MainContentInner: React.FC<MainContentProps> = ({ 
   onLogout,
   onVideoPlayStateChange,
   onVideoUpload,
-  onRegisterVideoControls
+  onFiltersChange,
+  onRegisterVideoControls,
+  isVideoPlaying = false,
+  selectedFilters = ['All']
 }) => {
   const { tabList, activeTab, addTab, removeTab, setActiveTab, clearAllTabs } = useTabManager();
   const [showProjectExplorer, setShowProjectExplorer] = React.useState(true);
@@ -152,7 +158,7 @@ const MainContentInner: React.FC<MainContentProps> = ({
   // Dashboard View - Full screen without tabs or project explorer
   if (currentView === 'Welcome') {
     return (
-      <div className="h-full flex flex-col">
+      <div className="h-full flex flex-col relative">
         <div className="flex-1 flex overflow-hidden">
           <Sidebar
             onNavigateToTab={handleNavigateToTab}
@@ -167,14 +173,17 @@ const MainContentInner: React.FC<MainContentProps> = ({
           </div>
         </div>
 
-        <StatusBar />
+        <StatusBar 
+          isVideoPlaying={isVideoPlaying}
+          selectedFilters={selectedFilters}
+        />
       </div>
     );
   }
 
   // Tabs View - Show tabs, project explorer, and tab content
   return (
-    <div className="h-full flex flex-col bg-zinc-950">
+    <div className="h-full flex flex-col bg-zinc-950 relative">
       <div className="flex-1 flex overflow-hidden">
         {/* Sidebar */}
         <Sidebar
@@ -223,7 +232,10 @@ const MainContentInner: React.FC<MainContentProps> = ({
       </div>
 
       {/* Status Bar */}
-      <StatusBar />
+      <StatusBar 
+        isVideoPlaying={isVideoPlaying}
+        selectedFilters={selectedFilters}
+      />
     </div>
   );
 };
@@ -232,7 +244,10 @@ const MainContent: React.FC<MainContentProps> = ({
   onLogout,
   onVideoPlayStateChange,
   onVideoUpload,
-  onRegisterVideoControls
+  onFiltersChange,
+  onRegisterVideoControls,
+  isVideoPlaying,
+  selectedFilters
 }) => {
   return (
     <TabManagerProvider>
@@ -240,7 +255,10 @@ const MainContent: React.FC<MainContentProps> = ({
         onLogout={onLogout}
         onVideoPlayStateChange={onVideoPlayStateChange}
         onVideoUpload={onVideoUpload}
+        onFiltersChange={onFiltersChange}
         onRegisterVideoControls={onRegisterVideoControls}
+        isVideoPlaying={isVideoPlaying}
+        selectedFilters={selectedFilters}
       />
     </TabManagerProvider>
   );
