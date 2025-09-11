@@ -5,10 +5,11 @@ import TabsContainer from '../components/TabsContainer';
 import TabContent from '../components/TabContent';
 import ProjectExplorer from '../components/ProjectExplorer';
 import { TabManagerProvider, useTabManager } from '../contexts/TabManagerContext';
-import { Home, Activity, FileText } from 'lucide-react';
+import { Home, Activity, FileText, Map } from 'lucide-react';
 import Welcome from './Welcome';
 import Profile from './Profile';
 import CriticalEventSieve from './ces/CriticalEventSieve';
+import SceneGeneration from './scenegeneration/SceneGeneration';
 
 interface VideoFile {
   id: string;
@@ -23,6 +24,7 @@ interface MainContentProps {
   onVideoPlayStateChange?: (isPlaying: boolean) => void;
   onVideoUpload?: (videos: VideoFile[]) => void;
   onFiltersChange?: (filters: string[]) => void;
+  onTaskUpdate?: (taskName: string) => void;
   onRegisterVideoControls?: (controls: {
     play: () => void;
     pause: () => void;
@@ -31,6 +33,7 @@ interface MainContentProps {
   }) => void;
   isVideoPlaying?: boolean;
   selectedFilters?: string[];
+  currentTaskName?: string;
 }
 
 const MainContentInner: React.FC<MainContentProps> = ({ 
@@ -38,9 +41,11 @@ const MainContentInner: React.FC<MainContentProps> = ({
   onVideoPlayStateChange,
   onVideoUpload,
   onFiltersChange,
+  onTaskUpdate,
   onRegisterVideoControls,
   isVideoPlaying = false,
-  selectedFilters = ['All']
+  selectedFilters = ['All'],
+  currentTaskName = ''
 }) => {
   const { tabList, activeTab, addTab, removeTab, setActiveTab, clearAllTabs } = useTabManager();
   const [showProjectExplorer, setShowProjectExplorer] = React.useState(true);
@@ -85,6 +90,14 @@ const MainContentInner: React.FC<MainContentProps> = ({
             onRegisterVideoControls={onRegisterVideoControls}
           />
         );
+      } else if (tabName === 'Scene Generation') {
+        finalComponent = (
+          <SceneGeneration
+            onVideoPlayStateChange={onVideoPlayStateChange}
+            onTaskUpdate={onTaskUpdate}
+            onRegisterVideoControls={onRegisterVideoControls}
+          />
+        );
       }
 
       // If tab doesn't exist, create it and switch to it
@@ -118,6 +131,17 @@ const MainContentInner: React.FC<MainContentProps> = ({
           <CriticalEventSieve
             onVideoPlayStateChange={onVideoPlayStateChange}
             onVideoUpload={onVideoUpload}
+            onRegisterVideoControls={onRegisterVideoControls}
+          />
+        );
+        break;
+      case 'Scene Generation':
+        icon = <Map size={16} />;
+        // Override content with scene generation component
+        finalContent = (
+          <SceneGeneration
+            onVideoPlayStateChange={onVideoPlayStateChange}
+            onTaskUpdate={onTaskUpdate}
             onRegisterVideoControls={onRegisterVideoControls}
           />
         );
@@ -176,6 +200,7 @@ const MainContentInner: React.FC<MainContentProps> = ({
         <StatusBar 
           isVideoPlaying={isVideoPlaying}
           selectedFilters={selectedFilters}
+          currentTaskName={currentTaskName}
         />
       </div>
     );
@@ -235,6 +260,7 @@ const MainContentInner: React.FC<MainContentProps> = ({
       <StatusBar 
         isVideoPlaying={isVideoPlaying}
         selectedFilters={selectedFilters}
+        currentTaskName={currentTaskName}
       />
     </div>
   );
@@ -245,9 +271,11 @@ const MainContent: React.FC<MainContentProps> = ({
   onVideoPlayStateChange,
   onVideoUpload,
   onFiltersChange,
+  onTaskUpdate,
   onRegisterVideoControls,
   isVideoPlaying,
-  selectedFilters
+  selectedFilters,
+  currentTaskName
 }) => {
   return (
     <TabManagerProvider>
@@ -256,9 +284,11 @@ const MainContent: React.FC<MainContentProps> = ({
         onVideoPlayStateChange={onVideoPlayStateChange}
         onVideoUpload={onVideoUpload}
         onFiltersChange={onFiltersChange}
+        onTaskUpdate={onTaskUpdate}
         onRegisterVideoControls={onRegisterVideoControls}
         isVideoPlaying={isVideoPlaying}
         selectedFilters={selectedFilters}
+        currentTaskName={currentTaskName}
       />
     </TabManagerProvider>
   );
