@@ -28,6 +28,7 @@ const StatusBar: React.FC<StatusBarProps> = ({
   const [backgroundTasks, setBackgroundTasks] = useState<BackgroundTask[]>([]);
   const [isTaskPanelOpen, setIsTaskPanelOpen] = useState(false);
   const [currentTask, setCurrentTask] = useState<BackgroundTask | null>(null);
+  const [processedTasks, setProcessedTasks] = useState<Set<string>>(new Set()); // Track processed task names
 
   // Function to add a new background task
   const addBackgroundTask = (name: string, details?: string): string => {
@@ -87,122 +88,174 @@ const StatusBar: React.FC<StatusBarProps> = ({
     setCurrentTask(prev => prev?.id === taskId ? null : prev);
   };
 
-  // Handle Scene Generation tasks based on currentTaskName
+  // Main task handling logic
   useEffect(() => {
-    if (currentTaskName && currentTaskName.trim() !== '') {
-      // Check if we need to create a task for Scene Generation
-      if (currentTaskName.includes('Location selected') || 
-          currentTaskName.includes('Tile selected') ||
-          currentTaskName.includes('Searching locations') ||
-          currentTaskName.includes('Loading map') ||
-          currentTaskName.includes('Starting 3D') ||
-          currentTaskName.includes('Generation') ||
-          currentTaskName.includes('selected:')) {
-        
-        // Create a task if one doesn't exist for this task name
-        const existingTask = backgroundTasks.find(task => 
-          task.details === currentTaskName && task.status === 'running'
-        );
-        
-        if (!existingTask) {
-          let taskName = "Scene Generation";
-          
-          if (currentTaskName.includes('Searching')) {
-            taskName = "Location Search";
-          } else if (currentTaskName.includes('Loading map')) {
-            taskName = "Map Loading";
-          } else if (currentTaskName.includes('Starting 3D') || currentTaskName.includes('3D scene generation')) {
-            taskName = "3D Scene Generation";
-          } else if (currentTaskName.includes('Location selected')) {
-            taskName = "Location Selection";
-          } else if (currentTaskName.includes('Tile selected')) {
-            taskName = "Tile Selection";
-          }
-          
-          const taskId = addBackgroundTask(taskName, currentTaskName);
-          
-          // Auto-complete simple tasks
-          if (currentTaskName.includes('selected')) {
-            setTimeout(() => {
-              completeTask(taskId);
-            }, 1000);
-          } else if (currentTaskName.includes('Loading map')) {
-            // Simulate map loading progress
-            let progress = 0;
-            const mapInterval = setInterval(() => {
-              progress += Math.random() * 25;
-              if (progress >= 100) {
-                progress = 100;
-                clearInterval(mapInterval);
-                completeTask(taskId);
-              }
-              updateTaskProgress(taskId, Math.min(progress, 100));
-            }, 300);
-          } else if (currentTaskName.includes('Starting 3D') || currentTaskName.includes('3D scene generation')) {
-            // Simulate 3D generation progress
-            let progress = 0;
-            const generationInterval = setInterval(() => {
-              progress += Math.random() * 10;
-              if (progress >= 100) {
-                progress = 100;
-                clearInterval(generationInterval);
-                completeTask(taskId);
-              } else {
-                updateTaskProgress(taskId, Math.min(progress, 100), 
-                  `Generating 3D scene... ${Math.round(progress)}% complete`);
-              }
-            }, 500);
-          }
-        }
-      }
+    if (!currentTaskName || currentTaskName.trim() === '') {
+      return;
     }
-  }, [currentTaskName, backgroundTasks]);
 
-  // Simulate video processing when playback starts (for CES)
-  useEffect(() => {
-    if (isVideoPlaying && (!currentTaskName || !currentTaskName.includes('Generation'))) {
-      // Add initial launching task
-      const launchTaskId = addBackgroundTask("Launching app");
+    // Avoid processing the same task multiple times
+    const taskKey = `${currentTaskName}_${Date.now()}`;
+    if (processedTasks.has(currentTaskName)) {
+      return;
+    }
+
+    console.log('StatusBar processing task:', currentTaskName);
+
+    // Scene Generation Tasks (independent of video playing state)
+    if (currentTaskName.includes('Location selected')) {
+      setProcessedTasks(prev => new Set(prev).add(currentTaskName));
+      const taskId = addBackgroundTask("Location Processing", currentTaskName);
+      setTimeout(() => completeTask(taskId), 1000);
+      return;
+    }
+
+    if (currentTaskName.includes('Starting point selected') || currentTaskName.includes('Tile selected')) {
+      setProcessedTasks(prev => new Set(prev).add(currentTaskName));
+      const taskId = addBackgroundTask("Starting Point Setup", currentTaskName);
+      setTimeout(() => completeTask(taskId), 1000);
+      return;
+    }
+
+    if (currentTaskName.includes('Reference selected') || currentTaskName.includes('Video selected')) {
+      setProcessedTasks(prev => new Set(prev).add(currentTaskName));
+      const taskId = addBackgroundTask("Video Reference Setup", currentTaskName);
+      setTimeout(() => completeTask(taskId), 1000);
+      return;
+    }
+
+    if (currentTaskName.includes('Video uploaded')) {
+      setProcessedTasks(prev => new Set(prev).add(currentTaskName));
+      const taskId = addBackgroundTask("Video Upload Processing", currentTaskName);
+      setTimeout(() => completeTask(taskId), 1500);
+      return;
+    }
+
+    if (currentTaskName.includes('Searching locations')) {
+      setProcessedTasks(prev => new Set(prev).add(currentTaskName));
+      const taskId = addBackgroundTask("Location Search", currentTaskName);
+      setTimeout(() => completeTask(taskId), 2000);
+      return;
+    }
+
+    if (currentTaskName.includes('Loading map')) {
+      setProcessedTasks(prev => new Set(prev).add(currentTaskName));
+      const taskId = addBackgroundTask("Map Loading", currentTaskName);
       
-      // Progress simulation for launching
+      // Simulate map loading progress
       let progress = 0;
-      const launchInterval = setInterval(() => {
-        progress += Math.random() * 20;
+      const mapInterval = setInterval(() => {
+        progress += Math.random() * 25;
         if (progress >= 100) {
           progress = 100;
-          clearInterval(launchInterval);
-          completeTask(launchTaskId);
+          clearInterval(mapInterval);
+          completeTask(taskId);
+        }
+        updateTaskProgress(taskId, Math.min(progress, 100));
+      }, 300);
+      return;
+    }
+
+    if (currentTaskName.includes('Starting 3D') || currentTaskName.includes('3D scene generation')) {
+      setProcessedTasks(prev => new Set(prev).add(currentTaskName));
+      const taskId = addBackgroundTask("3D Scene Generation", currentTaskName);
+      
+      // Simulate 3D generation progress
+      let progress = 0;
+      const generationInterval = setInterval(() => {
+        progress += Math.random() * 10;
+        if (progress >= 100) {
+          progress = 100;
+          clearInterval(generationInterval);
+          completeTask(taskId);
+        } else {
+          updateTaskProgress(taskId, Math.min(progress, 100), 
+            `Generating 3D scene... ${Math.round(progress)}% complete`);
+        }
+      }, 500);
+      return;
+    }
+
+    if (currentTaskName.includes('Scenario generation started')) {
+      setProcessedTasks(prev => new Set(prev).add(currentTaskName));
+      const taskId = addBackgroundTask("Scenario Generation", "Running scenario simulation...");
+      
+      let progress = 0;
+      const scenarioInterval = setInterval(() => {
+        progress += Math.random() * 8;
+        if (progress >= 100) {
+          clearInterval(scenarioInterval);
+          completeTask(taskId);
+        } else {
+          updateTaskProgress(taskId, Math.min(progress, 100), 
+            `Scenario simulation running... ${Math.round(progress)}% complete`);
+        }
+      }, 800);
+      return;
+    }
+
+    if (currentTaskName.includes('Scenario generation ready')) {
+      // This is a status message, not a task - don't create a background task
+      return;
+    }
+
+    // Clean up processed tasks periodically
+    setTimeout(() => {
+      setProcessedTasks(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(currentTaskName);
+        return newSet;
+      });
+    }, 5000);
+  }, [currentTaskName]);
+
+  // Handle CES video processing tasks (only when video is actually playing for CES)
+  useEffect(() => {
+    // Only trigger CES tasks if video is playing AND we're not in scenario generation mode
+    if (isVideoPlaying && !currentTaskName.includes('Generation') && !currentTaskName.includes('Scenario')) {
+      const taskId = addBackgroundTask("Video Processing", "Initializing video analysis...");
+      
+      // Progress simulation for video processing
+      let progress = 0;
+      const processingInterval = setInterval(() => {
+        progress += Math.random() * 15;
+        if (progress >= 100) {
+          progress = 100;
+          clearInterval(processingInterval);
+          completeTask(taskId);
           
-          // Start extraction task after launch completes
+          // Start extraction task after processing completes
           setTimeout(() => {
             startExtractionTask();
           }, 500);
+        } else {
+          updateTaskProgress(taskId, Math.min(progress, 100), 
+            `Processing video... ${Math.round(progress)}% complete`);
         }
-        updateTaskProgress(launchTaskId, Math.min(progress, 100));
-      }, 200);
+      }, 600);
 
       return () => {
-        clearInterval(launchInterval);
+        clearInterval(processingInterval);
       };
     }
   }, [isVideoPlaying, currentTaskName]);
 
-  // Function to start extraction task with random frame updates
+  // Function to start extraction task with random frame updates (CES specific)
   const startExtractionTask = () => {
     const filterName = selectedFilters.includes('All') || selectedFilters.length === 0 
       ? 'Critical Events' 
       : selectedFilters[0];
     
     const extractionTaskId = addBackgroundTask(
-      "Launching on devices",
-      `Preparing extraction for ${filterName}`
+      "Event Extraction",
+      `Extracting ${filterName}...`
     );
 
     let progress = 0;
     let frameNumber = Math.floor(Math.random() * 5000) + 1000;
 
     const extractionInterval = setInterval(() => {
-      progress += Math.random() * 15;
+      progress += Math.random() * 12;
       frameNumber += Math.floor(Math.random() * 50) + 10;
       
       if (progress >= 100) {
@@ -213,7 +266,7 @@ const StatusBar: React.FC<StatusBarProps> = ({
         updateTaskProgress(
           extractionTaskId, 
           Math.min(progress, 100),
-          `Extracting behaviour ${filterName} at frame ${frameNumber}`
+          `Extracting ${filterName} at frame ${frameNumber}`
         );
       }
     }, 800);
@@ -240,6 +293,19 @@ const StatusBar: React.FC<StatusBarProps> = ({
       default: return 'bg-blue-500';
     }
   };
+
+  // Determine system status
+  const getSystemStatus = () => {
+    if (hasActiveTasks) {
+      return { status: 'Processing', color: 'bg-yellow-400' };
+    }
+    if (currentTaskName.includes('ready')) {
+      return { status: 'Ready', color: 'bg-green-400' };
+    }
+    return { status: 'Ready', color: 'bg-green-400' };
+  };
+
+  const systemStatus = getSystemStatus();
 
   return (
     <>
@@ -312,8 +378,8 @@ const StatusBar: React.FC<StatusBarProps> = ({
         {/* Left section */}
         <div className="flex items-center space-x-4">
           <span className="flex items-center space-x-1">
-            <div className={`w-2 h-2 rounded-full ${hasActiveTasks ? 'bg-yellow-400' : 'bg-green-400'}`}></div>
-            <span>{hasActiveTasks ? 'Processing' : 'Ready'}</span>
+            <div className={`w-2 h-2 rounded-full ${systemStatus.color}`}></div>
+            <span>{systemStatus.status}</span>
           </span>
           
           {/* Current Task Display */}
@@ -329,10 +395,10 @@ const StatusBar: React.FC<StatusBarProps> = ({
             </span>
           )}
           
-          {/* Scene Generation Task Display */}
+          {/* Simple Task Display for non-background tasks */}
           {!currentTask && currentTaskName && currentTaskName.trim() !== '' && (
             <span className="flex items-center space-x-2">
-              <span className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></span>
+              <span className="w-2 h-2 bg-blue-400 rounded-full"></span>
               <span className="truncate max-w-xs text-blue-200">
                 {currentTaskName}
               </span>

@@ -20,6 +20,7 @@ const App: React.FC = () => {
   const [currentTaskName, setCurrentTaskName] = useState<string>('');
   const [hasLocation, setHasLocation] = useState(false);
   const [hasTile, setHasTile] = useState(false);
+  const [hasVideoReference, setHasVideoReference] = useState(false);
   const [videoControlRef, setVideoControlRef] = useState<{
     play: () => void;
     pause: () => void;
@@ -31,6 +32,7 @@ const App: React.FC = () => {
   const handleLogout = () => setCurrentPage('login');
 
   const handleVideoPlayStateChange = (isPlaying: boolean) => {
+    console.log('App: Video play state changed to:', isPlaying);
     setIsVideoPlaying(isPlaying);
   };
 
@@ -43,54 +45,88 @@ const App: React.FC = () => {
   };
 
   const handleTaskUpdate = (taskName: string) => {
+    console.log('App: Task update received:', taskName);
     setCurrentTaskName(taskName);
   };
 
-  // Track location and tile selection state
+  // Track location, tile, and video reference selection state
   useEffect(() => {
+    console.log('App: Tracking task name changes:', currentTaskName);
+    
     if (currentTaskName.includes('Location selected')) {
       setHasLocation(true);
     }
-    if (currentTaskName.includes('Tile selected')) {
+    if (currentTaskName.includes('Starting point selected') || currentTaskName.includes('Tile selected')) {
       setHasTile(true);
+    }
+    if (currentTaskName.includes('Reference selected') || currentTaskName.includes('Video selected') || currentTaskName.includes('Video uploaded')) {
+      setHasVideoReference(true);
     }
     if (currentTaskName.includes('Reset to clean state')) {
       setHasLocation(false);
       setHasTile(false);
+      setHasVideoReference(false);
     }
   }, [currentTaskName]);
 
   // Video control handlers for toolbar
   const handlePlay = () => {
-    videoControlRef?.play();
+    console.log('App: ToolBar Play clicked, videoControlRef:', !!videoControlRef);
+    if (videoControlRef) {
+      videoControlRef.play();
+    } else {
+      console.warn('App: No video controls registered');
+    }
   };
 
   const handlePause = () => {
-    videoControlRef?.pause();
+    console.log('App: ToolBar Pause clicked');
+    if (videoControlRef) {
+      videoControlRef.pause();
+    }
   };
 
   const handleStop = () => {
-    videoControlRef?.stop();
+    console.log('App: ToolBar Stop clicked');
+    if (videoControlRef) {
+      videoControlRef.stop();
+    }
   };
 
   const handleRestart = () => {
-    videoControlRef?.restart();
+    console.log('App: ToolBar Restart clicked');
+    if (videoControlRef) {
+      videoControlRef.restart();
+    }
   };
 
-  // Register video control methods (this would be called from CESLeftPanel or SceneGeneration)
+  // Register video control methods
   const registerVideoControls = (controls: {
     play: () => void;
     pause: () => void;
     stop: () => void;
     restart: () => void;
   }) => {
+    console.log('App: Registering video controls:', !!controls);
     setVideoControlRef(controls);
   };
 
   // Determine if we have content to work with 
   // For CES: videos uploaded
-  // For Scene Generation: both location AND tile selected
-  const hasContent = uploadedVideos.length > 0 || (hasLocation && hasTile);
+  // For Scene Generation: both location AND tile AND video reference selected
+  const hasContent = uploadedVideos.length > 0 || 
+    (hasLocation && hasTile) || 
+    currentTaskName.includes("Scenario generation ready");
+
+  console.log('App state:', { 
+    hasLocation, 
+    hasTile, 
+    hasVideoReference, 
+    hasContent, 
+    currentTaskName,
+    videoControlRef: !!videoControlRef,
+    isVideoPlaying
+  });
 
   return (
     <div className="h-screen flex flex-col overflow-hidden">

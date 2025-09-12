@@ -5,11 +5,12 @@ import TabsContainer from '../components/TabsContainer';
 import TabContent from '../components/TabContent';
 import ProjectExplorer from '../components/ProjectExplorer';
 import { TabManagerProvider, useTabManager } from '../contexts/TabManagerContext';
-import { Home, Activity, FileText, Map } from 'lucide-react';
+import { Home, Activity, FileText, Map, Navigation } from 'lucide-react';
 import Welcome from './Welcome';
 import Profile from './Profile';
 import CriticalEventSieve from './ces/CriticalEventSieve';
 import SceneGeneration from './scenegeneration/SceneGeneration';
+import ScenarioGeneration from './scenariogeneration/ScenarioGeneration'; // ADD THIS IMPORT
 
 interface VideoFile {
   id: string;
@@ -98,6 +99,14 @@ const MainContentInner: React.FC<MainContentProps> = ({
             onRegisterVideoControls={onRegisterVideoControls}
           />
         );
+      } else if (tabName === 'Scenario Generation') { // ADD THIS NEW CASE
+        finalComponent = (
+          <ScenarioGeneration
+            onVideoPlayStateChange={onVideoPlayStateChange}
+            onTaskUpdate={onTaskUpdate}
+            onRegisterVideoControls={onRegisterVideoControls}
+          />
+        );
       }
 
       // If tab doesn't exist, create it and switch to it
@@ -140,6 +149,17 @@ const MainContentInner: React.FC<MainContentProps> = ({
         // Override content with scene generation component
         finalContent = (
           <SceneGeneration
+            onVideoPlayStateChange={onVideoPlayStateChange}
+            onTaskUpdate={onTaskUpdate}
+            onRegisterVideoControls={onRegisterVideoControls}
+          />
+        );
+        break;
+      case 'Scenario Generation': // ADD THIS NEW CASE
+        icon = <Navigation size={16} />;
+        // Override content with scenario generation component
+        finalContent = (
+          <ScenarioGeneration
             onVideoPlayStateChange={onVideoPlayStateChange}
             onTaskUpdate={onTaskUpdate}
             onRegisterVideoControls={onRegisterVideoControls}
