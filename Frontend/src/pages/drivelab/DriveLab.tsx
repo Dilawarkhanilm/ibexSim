@@ -248,7 +248,7 @@ const DriveLab: React.FC<DriveLabProps> = ({
 
             {/* Right Panel - Configuration */}
             <div className={cn(
-                "transition-all duration-300 ease-in-out",
+                "transition-all duration-300 ease-in-out border-b border-zinc-800 rounded-lg",
                 isRightSidebarOpen ? 'w-80 opacity-100' : 'w-0 opacity-0',
                 "overflow-hidden"
             )}>
