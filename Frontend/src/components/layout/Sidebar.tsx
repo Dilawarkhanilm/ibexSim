@@ -27,7 +27,7 @@ import CriticalEventSieve from '../../pages/ces/CriticalEventSieve';
 import Dashboard from '../../pages/Welcome';
 import SceneGeneration from '../../pages/scenegeneration/SceneGeneration';
 import ScenarioGeneration from '../../pages/scenariogeneration/ScenarioGeneration';
-import DriveLab from '../../pages/DriveLab';
+import DriveLab from '../../pages/drivelab/DriveLab';
 import FileViewer from '../../pages/FileViewer';
 import Profile from '../../pages/Profile';
 import SettingsPage from '../../pages/SettingsPage';
