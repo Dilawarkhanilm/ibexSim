@@ -5,12 +5,13 @@ import TabsContainer from '../components/TabsContainer';
 import TabContent from '../components/TabContent';
 import ProjectExplorer from '../components/ProjectExplorer';
 import { TabManagerProvider, useTabManager } from '../contexts/TabManagerContext';
-import { Home, Activity, FileText, Map, Navigation } from 'lucide-react';
+import { Home, Activity, FileText, Map, Navigation, Car } from 'lucide-react';
 import Welcome from './Welcome';
 import Profile from './Profile';
 import CriticalEventSieve from './ces/CriticalEventSieve';
 import SceneGeneration from './scenegeneration/SceneGeneration';
-import ScenarioGeneration from './scenariogeneration/ScenarioGeneration'; // ADD THIS IMPORT
+import ScenarioGeneration from './scenariogeneration/ScenarioGeneration';
+import DriveLab from './drivelab/DriveLab'; // ADD DRIVELAB IMPORT
 
 interface VideoFile {
   id: string;
@@ -59,6 +60,8 @@ const MainContentInner: React.FC<MainContentProps> = ({
 
   // Handle navigation from sidebar clicks
   const handleNavigateToTab = (tabName: string, component: JSX.Element, icon?: JSX.Element) => {
+    console.log('MainContent: handleNavigateToTab called with:', tabName);
+    
     if (tabName === 'Welcome') {
       setCurrentView('Welcome');
       clearAllTabs();
@@ -84,6 +87,7 @@ const MainContentInner: React.FC<MainContentProps> = ({
       if (tabName === 'Profile') {
         finalComponent = <Profile onLogout={onLogout} />;
       } else if (tabName === 'Critical Event Sieve') {
+        console.log('MainContent: Creating CES component with props');
         finalComponent = (
           <CriticalEventSieve
             onVideoPlayStateChange={onVideoPlayStateChange}
@@ -92,6 +96,7 @@ const MainContentInner: React.FC<MainContentProps> = ({
           />
         );
       } else if (tabName === 'Scene Generation') {
+        console.log('MainContent: Creating SceneGeneration component with props');
         finalComponent = (
           <SceneGeneration
             onVideoPlayStateChange={onVideoPlayStateChange}
@@ -99,9 +104,23 @@ const MainContentInner: React.FC<MainContentProps> = ({
             onRegisterVideoControls={onRegisterVideoControls}
           />
         );
-      } else if (tabName === 'Scenario Generation') { // ADD THIS NEW CASE
+      } else if (tabName === 'Scenario Generation') {
+        console.log('MainContent: Creating ScenarioGeneration component with props');
         finalComponent = (
           <ScenarioGeneration
+            onVideoPlayStateChange={onVideoPlayStateChange}
+            onTaskUpdate={onTaskUpdate}
+            onRegisterVideoControls={onRegisterVideoControls}
+          />
+        );
+      } else if (tabName === 'DriveLab' || tabName === 'Drive Lab') { // Handle both variants
+        console.log('MainContent: Creating DriveLab component with props:', {
+          onVideoPlayStateChange: !!onVideoPlayStateChange,
+          onTaskUpdate: !!onTaskUpdate,
+          onRegisterVideoControls: !!onRegisterVideoControls
+        });
+        finalComponent = (
+          <DriveLab
             onVideoPlayStateChange={onVideoPlayStateChange}
             onTaskUpdate={onTaskUpdate}
             onRegisterVideoControls={onRegisterVideoControls}
@@ -126,6 +145,8 @@ const MainContentInner: React.FC<MainContentProps> = ({
 
   // Handle file clicks from project explorer
   const handleFileClick = (fileName: string, content: JSX.Element) => {
+    console.log('MainContent: handleFileClick called with:', fileName);
+    
     // Switch to tabs view when opening files
     setCurrentView('tabs');
 
@@ -135,7 +156,7 @@ const MainContentInner: React.FC<MainContentProps> = ({
     switch (fileName) {
       case 'Critical Event Sieve':
         icon = <Activity size={16} />;
-        // Override content with video-enabled component
+        console.log('MainContent: Creating CES from file click');
         finalContent = (
           <CriticalEventSieve
             onVideoPlayStateChange={onVideoPlayStateChange}
@@ -146,7 +167,7 @@ const MainContentInner: React.FC<MainContentProps> = ({
         break;
       case 'Scene Generation':
         icon = <Map size={16} />;
-        // Override content with scene generation component
+        console.log('MainContent: Creating SceneGeneration from file click');
         finalContent = (
           <SceneGeneration
             onVideoPlayStateChange={onVideoPlayStateChange}
@@ -155,11 +176,27 @@ const MainContentInner: React.FC<MainContentProps> = ({
           />
         );
         break;
-      case 'Scenario Generation': // ADD THIS NEW CASE
+      case 'Scenario Generation':
         icon = <Navigation size={16} />;
-        // Override content with scenario generation component
+        console.log('MainContent: Creating ScenarioGeneration from file click');
         finalContent = (
           <ScenarioGeneration
+            onVideoPlayStateChange={onVideoPlayStateChange}
+            onTaskUpdate={onTaskUpdate}
+            onRegisterVideoControls={onRegisterVideoControls}
+          />
+        );
+        break;
+      case 'DriveLab':
+      case 'Drive Lab': // Handle both variants
+        icon = <Car size={16} />;
+        console.log('MainContent: Creating DriveLab from file click with props:', {
+          onVideoPlayStateChange: !!onVideoPlayStateChange,
+          onTaskUpdate: !!onTaskUpdate,
+          onRegisterVideoControls: !!onRegisterVideoControls
+        });
+        finalContent = (
+          <DriveLab
             onVideoPlayStateChange={onVideoPlayStateChange}
             onTaskUpdate={onTaskUpdate}
             onRegisterVideoControls={onRegisterVideoControls}
@@ -197,6 +234,12 @@ const MainContentInner: React.FC<MainContentProps> = ({
         setCurrentView('Welcome');
       }, 100);
     }
+  };
+
+  // Debug: Log when onTaskUpdate is called
+  const debugTaskUpdate = (taskName: string) => {
+    console.log('MainContent: onTaskUpdate called with:', taskName);
+    onTaskUpdate?.(taskName);
   };
 
   // Dashboard View - Full screen without tabs or project explorer
@@ -297,6 +340,14 @@ const MainContent: React.FC<MainContentProps> = ({
   selectedFilters,
   currentTaskName
 }) => {
+  // Debug: Log props received by MainContent
+  console.log('MainContent: Received props:', {
+    onTaskUpdate: !!onTaskUpdate,
+    onVideoPlayStateChange: !!onVideoPlayStateChange,
+    onRegisterVideoControls: !!onRegisterVideoControls,
+    currentTaskName
+  });
+
   return (
     <TabManagerProvider>
       <MainContentInner 
@@ -314,4 +365,4 @@ const MainContent: React.FC<MainContentProps> = ({
   );
 };
 
-export default MainContent;
+export default MainContent

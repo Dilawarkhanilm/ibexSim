@@ -62,10 +62,25 @@ const App: React.FC = () => {
     if (currentTaskName.includes('Reference selected') || currentTaskName.includes('Video selected') || currentTaskName.includes('Video uploaded')) {
       setHasVideoReference(true);
     }
-    if (currentTaskName.includes('Reset to clean state')) {
-      setHasLocation(false);
-      setHasTile(false);
-      setHasVideoReference(false);
+    // DriveLab specific states
+    if (currentTaskName.includes('Vehicle selected')) {
+      setHasLocation(true); // Use hasLocation for vehicle selection
+      setHasTile(true); // Auto-enable simulation controls when vehicle is selected
+    }
+    if (currentTaskName.includes('Simulation started') || currentTaskName.includes('ready to run simulation')) {
+      setHasTile(true); // Use hasTile for simulation readiness
+    }
+    // DriveLab initial ready state - enable controls immediately
+    if (currentTaskName.includes('Ready - Please select a vehicle')) {
+      setHasLocation(true); // Enable toolbar controls for DriveLab
+    }
+    if (currentTaskName.includes('Reset to clean state') || currentTaskName.includes('Simulation stopped')) {
+      // For DriveLab, keep controls enabled after stopping
+      if (!currentTaskName.includes('Ready for new configuration')) {
+        setHasLocation(false);
+        setHasTile(false);
+        setHasVideoReference(false);
+      }
     }
   }, [currentTaskName]);
 
@@ -115,8 +130,11 @@ const App: React.FC = () => {
   // For CES: videos uploaded
   // For Scene Generation: both location AND tile AND video reference selected
   const hasContent = uploadedVideos.length > 0 || 
-    (hasLocation && hasTile) || 
-    currentTaskName.includes("Scenario generation ready");
+  (hasLocation && hasTile) || 
+  currentTaskName.includes("Scenario generation ready") ||
+  currentTaskName.includes("Vehicle selected") ||
+  currentTaskName.includes("ready to run simulation") ||
+  currentTaskName.includes("Vehicle: Sedan Model A selected - Configure add-ons");
 
   console.log('App state:', { 
     hasLocation, 
