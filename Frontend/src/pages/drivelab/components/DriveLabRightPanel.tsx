@@ -357,7 +357,7 @@ const DriveLabRightPanel: React.FC<DriveLabRightPanelProps> = ({
 
 
                         <div className={`space-y-2 ${isSimulating ? 'opacity-50' : ''}`}>
-                            <Label className="text-xs text-zinc-300">Traffic Density</Label>
+                            <Label className="text-xs text-zinc-300">Weather</Label>
                             <Select
                                 value={simulationConfig.weather}
                                 onValueChange={(value) => handleConfigChange('weather', value)}

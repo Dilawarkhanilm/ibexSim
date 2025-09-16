@@ -81,11 +81,11 @@ const Sidebar: React.FC<SidebarProps> = ({
             icon: Car,
             component: <DriveLab />
         },
-        {
-            name: 'File Viewer',
-            icon: FileText,
-            component: <FileViewer />
-        },
+        // {
+        //     name: 'File Viewer',
+        //     icon: FileText,
+        //     component: <FileViewer />
+        // },
     ];
 
     const toolItems: SidebarNavItem[] = [
@@ -129,7 +129,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                     variant="ghost"
                     size="sm"
                     className={cn(
-                        "w-8 h-8 p-0 rounded-md transition-all duration-200",
+                        "w-8 h-8 p-0 rounded-md transition-all duration-200 cursor-pointer",
                         isActiveItem
                             ? "bg-zinc-800 text-white shadow-sm border border-zinc-700"
                             : "text-zinc-400 hover:text-white hover:bg-zinc-800",
@@ -142,7 +142,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             </TooltipTrigger>
             <TooltipContent
                 side="right"
-                className="bg-zinc-900 border-zinc-700 text-zinc-200"
+                className="bg-zinc-950 border-zinc-700 text-zinc-200"
                 sideOffset={8}
             >
                 {item.name}
@@ -153,71 +153,70 @@ const Sidebar: React.FC<SidebarProps> = ({
     return (
         <TooltipProvider delayDuration={300}>
             <div className={cn(
-                "w-12 bg-zinc-900 border-r border-zinc-800 flex flex-col items-center py-3",
+                "w-12 bg-zinc-900 border-r border-zinc-800 flex flex-col items-center py-3 h-full",
                 className
             )}>
-                {/* Project Explorer */}
-                <div className="mb-3">
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                className={cn(
-                                    "w-8 h-8 p-0 rounded-md transition-all duration-200",
-                                    isExplorerOpen
-                                        ? "bg-zinc-800 text-white shadow-sm border border-zinc-700"
-                                        : "text-zinc-400 hover:text-white hover:bg-zinc-800",
-                                    "hover:scale-105"
-                                )}
-                                onClick={onToggleExplorer}
+                {/* Top Section - Explorer and Navigation */}
+                <div className="flex flex-col items-center">
+                    {/* Project Explorer */}
+                    <div className="mb-3">
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className={cn(
+                                        "w-8 h-8 p-0 rounded-md transition-all duration-200 cursor-pointer",
+                                        isExplorerOpen
+                                            ? "bg-zinc-800 text-white shadow-sm border border-zinc-700"
+                                            : "text-zinc-400 hover:text-white hover:bg-zinc-800",
+                                        "hover:scale-105"
+                                    )}
+                                    onClick={onToggleExplorer}
+                                >
+                                    <FolderOpen size={16} />
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent
+                                side="right"
+                                className="bg-zinc-950 border-zinc-700 text-zinc-200"
+                                sideOffset={8}
                             >
-                                <FolderOpen size={16} />
-                            </Button>
-                        </TooltipTrigger>
-                        <TooltipContent
-                            side="right"
-                            className="bg-zinc-900 border-zinc-700 text-zinc-200"
-                            sideOffset={8}
-                        >
-                            {isExplorerOpen ? "Close Explorer" : "Open Explorer"}
-                        </TooltipContent>
-                    </Tooltip>
+                                {isExplorerOpen ? "Close Explorer" : "Open Explorer"}
+                            </TooltipContent>
+                        </Tooltip>
+                    </div>
+
+                    <Separator className="w-6 bg-zinc-700 mb-3" />
+
+                    {/* Navigation Items */}
+                    <div className="flex flex-col space-y-1">
+                        {navigationItems.map((item) =>
+                            renderSidebarButton(
+                                item,
+                                () => handleItemClick(item),
+                                isActive(item.name)
+                            )
+                        )}
+                    </div>
                 </div>
 
+                {/* Spacer to push bottom items down */}
+                <div className="flex-1" />
                 <Separator className="w-6 bg-zinc-700 mb-3" />
-
-                {/* Navigation Items */}
-                <div className="flex flex-col space-y-1 mb-3">
-                    {navigationItems.map((item) =>
-                        renderSidebarButton(
-                            item,
-                            () => handleItemClick(item),
-                            isActive(item.name)
-                        )
-                    )}
-                </div>
-
-                <Separator className="w-6 bg-zinc-700 mb-3" />
-
-                {/* Tool Items */}
-                <div className="flex flex-col space-y-1 flex-1">
-                    {toolItems.map((item) =>
-                        renderSidebarButton(item)
-                    )}
-                </div>
-
-                <Separator className="w-6 bg-zinc-700 mb-3" />
-
-                {/* Bottom Items */}
-                <div className="flex flex-col space-y-1">
-                    {bottomItems.map((item) =>
-                        renderSidebarButton(
-                            item,
-                            () => handleItemClick(item),
-                            isActive(item.name)
-                        )
-                    )}
+                {/* Bottom Section - Settings and Profile */}
+                <div className="flex flex-col items-center">
+                    
+                    
+                    <div className="flex flex-col space-y-1">
+                        {bottomItems.map((item) =>
+                            renderSidebarButton(
+                                item,
+                                () => handleItemClick(item),
+                                isActive(item.name)
+                            )
+                        )}
+                    </div>
                 </div>
             </div>
         </TooltipProvider>

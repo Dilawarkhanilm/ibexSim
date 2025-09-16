@@ -7,6 +7,7 @@ import {
     Car,
     Box,
     Camera,
+    CameraIcon,
     Radar,
     Zap,
     ChevronLeft,
@@ -188,7 +189,7 @@ const DriveLabLeftPanel: React.FC<DriveLabLeftPanelProps> = ({
                                 variant="outline"
                                 size="sm"
                                 onClick={handleParametersClick}
-                                className="h-7 px-2 text-xs bg-zinc-800 hover:bg-zinc-700 border-zinc-700"
+                                className="h-7 px-2 text-xs bg-zinc-800 hover:bg-zinc-700 border-zinc-700 cursor-pointer"
                             >
                                 <Settings size={12} className="mr-1" />
                                 Parameters
@@ -397,15 +398,15 @@ const DriveLabLeftPanel: React.FC<DriveLabLeftPanelProps> = ({
                                         <p className="text-xs text-zinc-400 mb-2">Equipment:</p>
                                         <div className="flex items-center space-x-4">
                                             <div className="flex items-center space-x-1">
-                                                <Camera size={12} className="text-blue-400" />
+                                                <CameraIcon size={16} />
                                                 <span className="text-xs text-zinc-300">1x Camera</span>
                                             </div>
                                             <div className="flex items-center space-x-1">
-                                                <Radar size={12} className="text-green-400" />
+                                                <Radar size={16} />
                                                 <span className="text-xs text-zinc-300">1x Radar</span>
                                             </div>
                                             <div className="flex items-center space-x-1">
-                                                <Zap size={12} className="text-yellow-400" />
+                                                <Zap size={16} />
                                                 <span className="text-xs text-zinc-300">1x Lidar</span>
                                             </div>
                                         </div>

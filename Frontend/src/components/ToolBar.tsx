@@ -232,7 +232,7 @@ const ToolBar: React.FC<ToolBarProps> = ({
                                                 variant={getButtonVariant(item.variant)}
                                                 size="sm"
                                                 className={cn(
-                                                    "w-7 h-7 p-0",
+                                                    "w-7 h-7 p-0 cursor-pointer",
                                                     getButtonClassName(item.variant, isDisabled)
                                                 )}
                                                 onClick={isDisabled ? undefined : item.onClick}
@@ -243,7 +243,7 @@ const ToolBar: React.FC<ToolBarProps> = ({
                                         </TooltipTrigger>
                                         <TooltipContent
                                             side="bottom"
-                                            className="bg-zinc-900 border-zinc-700 text-zinc-200 text-xs"
+                                            className="bg-zinc-950 border-zinc-700 text-zinc-200 text-xs cursor-pointer"
                                         >
                                             {item.tooltip}
                                             {isDisabled && !hasVideos && " (No videos uploaded)"}

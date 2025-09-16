@@ -38,7 +38,7 @@ const TabsContainer: React.FC<TabsContainerProps> = ({
                             variant="ghost"
                             onClick={() => setActiveTab(tab.name)}
                             className={cn(
-                                "flex items-center px-3 py-1.5 text-xs h-8 flex-1 min-w-0 justify-start rounded-none border-0 pr-1",
+                                "flex items-center px-3 py-1.5 text-xs h-8 flex-1 min-w-0 justify-start rounded-none border-0 pr-1 cursor-pointer",
                                 activeTab === tab.name
                                     ? "text-white hover:text-white hover:bg-zinc-800"
                                     : "text-zinc-400 hover:text-white hover:bg-zinc-800"
