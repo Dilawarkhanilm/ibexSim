@@ -20,7 +20,8 @@ import {
     Activity,
     Zap,
     Car,
-    FileText,
+    FunnelPlus,
+    Box,
     Settings
 } from 'lucide-react';
 import CriticalEventSieve from '../../pages/ces/CriticalEventSieve';
@@ -63,12 +64,12 @@ const Sidebar: React.FC<SidebarProps> = ({
         },
         {
             name: 'Critical Event Sieve',
-            icon: Activity,
+            icon: FunnelPlus,
             component: <CriticalEventSieve />
         },
         {
             name: 'Scene Generation',
-            icon: Zap,
+            icon: Box,
             component: <SceneGeneration />
         },
         {
