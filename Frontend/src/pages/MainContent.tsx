@@ -42,7 +42,6 @@ const MainContentInner: React.FC<MainContentProps> = ({
   onLogout,
   onVideoPlayStateChange,
   onVideoUpload,
-  onFiltersChange,
   onTaskUpdate,
   onRegisterVideoControls,
   isVideoPlaying = false,
@@ -234,12 +233,6 @@ const MainContentInner: React.FC<MainContentProps> = ({
         setCurrentView('Welcome');
       }, 100);
     }
-  };
-
-  // Debug: Log when onTaskUpdate is called
-  const debugTaskUpdate = (taskName: string) => {
-    console.log('MainContent: onTaskUpdate called with:', taskName);
-    onTaskUpdate?.(taskName);
   };
 
   // Dashboard View - Full screen without tabs or project explorer

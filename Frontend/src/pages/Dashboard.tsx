@@ -262,7 +262,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigateToTab }) => {
     }
   };
 
-  const renderFeatureCard = (feature: FeatureCard, index: number) => (
+  const renderFeatureCard = (feature: FeatureCard) => (
     <Card
       key={feature.id}
       className={cn(
@@ -345,7 +345,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigateToTab }) => {
           </Badge>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {navigationFeatures.map((feature, index) => renderFeatureCard(feature, index))}
+          {navigationFeatures.map((feature,) => renderFeatureCard(feature))}
         </div>
       </div>
 
@@ -358,7 +358,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigateToTab }) => {
           </Badge>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {additionalFeatures.map((feature, index) => renderFeatureCard(feature, index))}
+          {additionalFeatures.map((feature, ) => renderFeatureCard(feature))}
         </div>
       </div>
 

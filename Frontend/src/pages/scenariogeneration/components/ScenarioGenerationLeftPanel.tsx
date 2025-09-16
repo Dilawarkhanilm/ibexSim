@@ -3,8 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
     Video,
     Eye,
-    Play,
-    Pause
 } from 'lucide-react';
 
 interface ScenarioGenerationLeftPanelProps {

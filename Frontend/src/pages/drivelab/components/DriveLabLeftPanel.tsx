@@ -60,11 +60,8 @@ interface FeedView {
 
 const DriveLabLeftPanel: React.FC<DriveLabLeftPanelProps> = ({
     selectedVehicle,
-    addOns = [],
     onVehicleSelect,
-    onAddOnToggle,
     isSimulating = false,
-    onTaskUpdate
 }) => {
     const [currentVehicleIndex, setCurrentVehicleIndex] = useState(0);
     const [show3DModel, setShow3DModel] = useState(false);

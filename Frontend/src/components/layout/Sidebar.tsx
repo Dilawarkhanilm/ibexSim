@@ -11,14 +11,8 @@ import { cn } from "@/lib/utils";
 import {
     Home,
     FolderOpen,
-    Search,
     GitBranch,
-    Bug,
-    Shield,
-    Puzzle,
     User,
-    Activity,
-    Zap,
     Car,
     FunnelPlus,
     Box,
@@ -29,7 +23,6 @@ import Dashboard from '../../pages/Welcome';
 import SceneGeneration from '../../pages/scenegeneration/SceneGeneration';
 import ScenarioGeneration from '../../pages/scenariogeneration/ScenarioGeneration';
 import DriveLab from '../../pages/drivelab/DriveLab';
-import FileViewer from '../../pages/FileViewer';
 import Profile from '../../pages/Profile';
 import SettingsPage from '../../pages/SettingsPage';
  
@@ -82,19 +75,6 @@ const Sidebar: React.FC<SidebarProps> = ({
             icon: Car,
             component: <DriveLab />
         },
-        // {
-        //     name: 'File Viewer',
-        //     icon: FileText,
-        //     component: <FileViewer />
-        // },
-    ];
-
-    const toolItems: SidebarNavItem[] = [
-        { name: 'Search', icon: Search },
-        { name: 'Source Control', icon: GitBranch },
-        { name: 'Run and Debug', icon: Bug },
-        { name: 'Testing', icon: Shield },
-        { name: 'Extensions', icon: Puzzle },
     ];
 
     const bottomItems: SidebarNavItem[] = [

@@ -28,7 +28,7 @@ const StatusBar: React.FC<StatusBarProps> = ({
   const [backgroundTasks, setBackgroundTasks] = useState<BackgroundTask[]>([]);
   const [isTaskPanelOpen, setIsTaskPanelOpen] = useState(false);
   const [currentTask, setCurrentTask] = useState<BackgroundTask | null>(null);
-  const [processedTasks, setProcessedTasks] = useState<Set<string>>(new Set()); // Track processed task names
+  const [, setProcessedTasks] = useState<Set<string>>(new Set()); // Track processed task names
 
   // Function to add a new background task
   const addBackgroundTask = (name: string, details?: string): string => {
@@ -91,12 +91,6 @@ const StatusBar: React.FC<StatusBarProps> = ({
   // Main task handling logic
   useEffect(() => {
     if (!currentTaskName || currentTaskName.trim() === '') {
-      return;
-    }
-
-    // Avoid processing the same task multiple times
-    const taskKey = `${currentTaskName}_${Date.now()}`;
-    if (processedTasks.has(currentTaskName)) {
       return;
     }
 

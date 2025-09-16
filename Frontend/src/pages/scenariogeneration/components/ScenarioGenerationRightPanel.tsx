@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import 'leaflet/dist/leaflet.css';
+
 import {
     Search,
     MapPin,
@@ -76,6 +78,8 @@ const ScenarioGenerationRightPanel: React.FC<ScenarioGenerationRightPanelProps> 
     const [showMapModal, setShowMapModal] = useState(false);
     const [showVideoModal, setShowVideoModal] = useState(false);
     const [isDragOver, setIsDragOver] = useState(false);
+
+    
     
     // Local state for temporary map interaction (before confirmation)
     const [tempSimulationPoint, setTempSimulationPoint] = useState<SimulationPoint | null>(null);
@@ -89,7 +93,7 @@ const ScenarioGenerationRightPanel: React.FC<ScenarioGenerationRightPanelProps> 
 
     const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const mapRef = useRef<HTMLDivElement>(null);
-    const leafletMapRef = useRef<any>(null);
+    const leafletMapRef = useRef<import('leaflet').Map | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Sample video catalog

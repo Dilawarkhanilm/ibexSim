@@ -48,7 +48,6 @@ interface SceneGenerationRightPanelProps {
 
 const SceneGenerationRightPanel: React.FC<SceneGenerationRightPanelProps> = ({
     onLocationSelect,
-    onTileSelect,
     selectedLocation,
     selectedTile,
     isGenerating = false,

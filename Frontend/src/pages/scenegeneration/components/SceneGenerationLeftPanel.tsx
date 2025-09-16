@@ -44,12 +44,9 @@ const SceneGenerationLeftPanel: React.FC<SceneGenerationLeftPanelProps> = ({
     const leafletMapRef = useRef<any>(null);
     const gridLayerRef = useRef<any>(null);
     const [isMapLoaded, setIsMapLoaded] = useState(false);
-    const [tileWidthKm] = useState(2); // 2km tile width (matching backend)
-    const [tileHeightKm] = useState(2); // 2km tile height (matching backend)
+
     const TILE_WIDTH_KM = 2;
-const TILE_HEIGHT_KM = 2;
-const KM_TO_DEG = 1 / 111;
-    const [hoveredTile, setHoveredTile] = useState<string | null>(null);
+    const TILE_HEIGHT_KM = 2;
 
     // Load Leaflet dynamically
     useEffect(() => {
@@ -98,12 +95,6 @@ const KM_TO_DEG = 1 / 111;
                 maxZoom: 19
             }).addTo(map);
 
-            // Add marker for selected location
-            const marker = window.L.marker([selectedLocation.lat, selectedLocation.lon])
-                .addTo(map)
-                .bindPopup(`<b>${selectedLocation.name}</b><br>${selectedLocation.area}`)
-                .openPopup();
-
             leafletMapRef.current = map;
 
             // Add grid overlay
@@ -124,98 +115,98 @@ const KM_TO_DEG = 1 / 111;
     const addGridOverlay = () => {
         if (!leafletMapRef.current || !selectedLocation) return;
         const map = leafletMapRef.current;
-      
+
         if (gridLayerRef.current) {
-          map.removeLayer(gridLayerRef.current);
+            map.removeLayer(gridLayerRef.current);
         }
-      
+
         const gridLayer = window.L.layerGroup();
-      
+
         // Fixed bounding box around city (instead of map.getBounds)
         // Example: Islamabad (replace with your backend-provided bounds)
         const minLat = 33.4;
         const maxLat = 33.9;
         const minLng = 72.8;
         const maxLng = 73.3;
-      
+
         const KM_TO_DEG = 1 / 111;
         const tileWidthDeg = TILE_WIDTH_KM * KM_TO_DEG;
         const tileHeightDeg = TILE_HEIGHT_KM * KM_TO_DEG;
-      
+
         let tileNumber = 1;
-      
+
         for (let x = minLng; x < maxLng; x += tileWidthDeg) {
             for (let y = minLat; y < maxLat; y += tileHeightDeg) {
-              const tileBounds = {
-                north: y + tileHeightDeg,
-                south: y,
-                east: x + tileWidthDeg,
-                west: x,
-              };
-          
-              const rect = window.L.rectangle(
-                [
-                  [tileBounds.south, tileBounds.west],
-                  [tileBounds.north, tileBounds.east],
-                ],
-                {
-                  color: "green",
-                  weight: 1,
-                  fillOpacity: 0,
-                }
-              );
-          
-              // 👉 Add click handler
-              rect.on("click", () => {
-                if (isGenerating) return;
-          
-                const tileInfo: TileInfo = {
-                  id: `tile_${tileNumber}`,
-                  x: tileNumber - 1,
-                  y: 0, // y-index agar chahiye to add kar sakte ho
-                  bounds: tileBounds,
+                const tileBounds = {
+                    north: y + tileHeightDeg,
+                    south: y,
+                    east: x + tileWidthDeg,
+                    west: x,
                 };
-          
-                onTileSelect?.(tileInfo); // 🔑 Notify parent (SceneGeneration)
-                onTaskUpdate?.(`Tile selected: (${tileInfo.x}, ${tileInfo.y})`);
-          
-                // Zoom into tile
-                map.fitBounds([
-                  [tileBounds.south, tileBounds.west],
-                  [tileBounds.north, tileBounds.east],
-                ]);
-              });
-          
-              // 👉 Hover effect
-              rect.on("mouseover", () => {
-                rect.setStyle({ color: "blue", weight: 2, fillOpacity: 0.3 });
-              });
-              rect.on("mouseout", () => {
-                rect.setStyle({ color: "green", weight: 1, fillOpacity: 0 });
-              });
-          
-              const centerLat = y + tileHeightDeg / 2;
-              const centerLng = x + tileWidthDeg / 2;
-          
-              const label = window.L.marker([centerLat, centerLng], {
-                icon: window.L.divIcon({
-                  className: "tile-label",
-                  html: `<div style="font-size:12px; font-weight:bold; color:red; text-shadow:1px 1px 2px white;">${tileNumber}</div>`,
-                }),
-              });
-          
-              gridLayer.addLayer(rect);
-              gridLayer.addLayer(label);
-              tileNumber++;
+
+                const rect = window.L.rectangle(
+                    [
+                        [tileBounds.south, tileBounds.west],
+                        [tileBounds.north, tileBounds.east],
+                    ],
+                    {
+                        color: "green",
+                        weight: 1,
+                        fillOpacity: 0,
+                    }
+                );
+
+                // 👉 Add click handler
+                rect.on("click", () => {
+                    if (isGenerating) return;
+
+                    const tileInfo: TileInfo = {
+                        id: `tile_${tileNumber}`,
+                        x: tileNumber - 1,
+                        y: 0, // y-index agar chahiye to add kar sakte ho
+                        bounds: tileBounds,
+                    };
+
+                    onTileSelect?.(tileInfo); // 🔑 Notify parent (SceneGeneration)
+                    onTaskUpdate?.(`Tile selected: (${tileInfo.x}, ${tileInfo.y})`);
+
+                    // Zoom into tile
+                    map.fitBounds([
+                        [tileBounds.south, tileBounds.west],
+                        [tileBounds.north, tileBounds.east],
+                    ]);
+                });
+
+                // 👉 Hover effect
+                rect.on("mouseover", () => {
+                    rect.setStyle({ color: "blue", weight: 2, fillOpacity: 0.3 });
+                });
+                rect.on("mouseout", () => {
+                    rect.setStyle({ color: "green", weight: 1, fillOpacity: 0 });
+                });
+
+                const centerLat = y + tileHeightDeg / 2;
+                const centerLng = x + tileWidthDeg / 2;
+
+                const label = window.L.marker([centerLat, centerLng], {
+                    icon: window.L.divIcon({
+                        className: "tile-label",
+                        html: `<div style="font-size:12px; font-weight:bold; color:red; text-shadow:1px 1px 2px white;">${tileNumber}</div>`,
+                    }),
+                });
+
+                gridLayer.addLayer(rect);
+                gridLayer.addLayer(label);
+                tileNumber++;
             }
-          }
-          
-      
+        }
+
+
         gridLayer.addTo(map);
         gridLayerRef.current = gridLayer;
-      };
-      
-      
+    };
+
+
 
     // Update map when selected location changes
     useEffect(() => {

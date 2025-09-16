@@ -15,6 +15,15 @@ interface SelectedVehicle {
     model: string;
 }
 
+interface VideoReference {
+    id: string;
+    name: string;
+    url: string;
+    duration: string;
+    thumbnail: string;
+  }
+
+
 interface AddOnConfig {
     id: string;
     name: string;
@@ -34,6 +43,7 @@ interface SimulationConfig {
     simulationTime: number;
     perceptionAlgorithm: string;
     uploadedScenario?: File;
+    selectedVideo?: VideoReference | null;
 }
 
 interface DriveLabProps {
@@ -64,7 +74,8 @@ const DriveLab: React.FC<DriveLabProps> = ({
         trafficDensity: 'Less Dense',
         trafficType: 'No Bikes',
         simulationTime: 60,
-        perceptionAlgorithm: 'Default'
+        perceptionAlgorithm: 'Default',
+        selectedVideo: null,
     });
     const [isSimulating, setIsSimulating] = useState(false);
     const [isPaused, setIsPaused] = useState(false);
